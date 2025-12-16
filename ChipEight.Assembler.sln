@@ -8,7 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChipEight.Assembler.Host", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{CA399CE3-F4D6-42E5-A623-84F50DA212F3}"
 	ProjectSection(SolutionItems) = preProject
-		misc\syntax.md = misc\syntax.md
+		misc\assembler.md = misc\assembler.md
 	EndProjectSection
 EndProject
 Global
