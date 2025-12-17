@@ -32,6 +32,7 @@ public class TokenizerTests
     public void FromFile_InputIsValid_ReturnsTokens()
     {
         var asm = """
+                  # example of an assembly
                   label:
                     CLR
                     JMP 544

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
+using ChipEight.Assembler.Exceptions;
 
 namespace ChipEight.Assembler;
 
@@ -14,31 +14,9 @@ public sealed class Compiler
         var tokens = Tokenizer.FromFile(asm);
         var lines = Parser.Parse(tokens);
         var symbolMap = SymbolMap.FromParsedLines(lines);
-        var binary = Encoder.Encode(symbolMap, lines);
+        var binary = new Encoder().Build().Encode(symbolMap, lines);
 
         return binary;
-    }
-}
-
-public class Parser
-{
-    public static ImmutableArray<ParsedLine> Parse(ImmutableArray<ImmutableArray<string>> tokens)
-    {
-        var lines = new List<ParsedLine>();
-
-        foreach (var lineTokens in tokens)
-        {
-            var parsedLine = FromLine(lineTokens);
-            
-            lines.Add(parsedLine);
-        }
-
-        return lines.ToImmutableArray();
-    }
-
-    private static ParsedLine FromLine(ImmutableArray<string> tokens)
-    {
-        return new ParsedLine();
     }
 }
 
@@ -52,33 +30,33 @@ public class SymbolMap
 
 public class Encoder
 {
-    public static byte[] Encode(SymbolMap symbolMap, ImmutableArray<ParsedLine> lines)
+    private readonly Dictionary<string, InstructionPattern> _patterns = new();
+
+    public Encoder Build()
     {
-        return [];
+        _patterns.Add("CLR", new PatternClear());
+        
+        return this;
     }
-}
-
-public class Tokenizer
-{
-    public static ImmutableArray<ImmutableArray<string>> FromFile(string asm)
+    
+    public byte[] Encode(SymbolMap symbolMap, ImmutableArray<ParsedLine> lines)
     {
-        var tokenLines = new List<ImmutableArray<string>>();
+        var binary = new List<byte>();
 
-        foreach (var line in asm.Split(Environment.NewLine))
+        foreach (var parsedLine in lines)
         {
-            var tokens = FromLine(line);
-
-            tokenLines.Add(tokens);
+            if (parsedLine.LineType == LineType.Instruction)
+            {
+                var opcpde = _patterns[parsedLine.Instruction].Encode(parsedLine.LineNumber, parsedLine.Operands);
+                var bytes = BitConverter.GetBytes(opcpde);
+                
+                bytes.Reverse();
+                
+                binary.AddRange(bytes);
+            }
         }
 
-        return tokenLines.ToImmutableArray();
-    }
-
-    public static ImmutableArray<string> FromLine(string line)
-    {
-        var split = line.Trim().Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-
-        return split.Select(s => s.Trim()).ToImmutableArray();
+        return binary.ToArray();
     }
 }
 
@@ -93,7 +71,7 @@ public abstract class InstructionPattern
         Keyword = keyword;
     }
 
-    public abstract ushort Encode(params Operand[] operands);
+    public abstract ushort Encode(int lineNumber, ImmutableArray<Operand> operands);
 
     public string Mnemonic { get; private set; }
 
@@ -104,50 +82,13 @@ public class PatternClear : InstructionPattern
 {
     public PatternClear() : base("CLR", "Clear") { }
     
-    public override ushort Encode(params Operand[] operands)
+    public override ushort Encode(int lineNumber, ImmutableArray<Operand> operands)
     {
+        if (operands.Length != 0)
+        {
+            throw new SyntaxException(lineNumber);
+        }
+
         return 0x00E0;
     }
-}
-
-public class Operand
-{
-    public Operand(string token)
-    {
-        OperandType = OperandType.Comment;
-    }
-    
-    public OperandType OperandType { get; private set; }
-}
-
-public class ParsedLine
-{
-    public ParsedLine(params string[] tokens)
-    {
-        Instruction = string.Empty;
-        Operands = [];
-        LineType = LineType.Comment;
-    }
-
-    public string Instruction { get; private set; }
-
-    public ImmutableArray<Operand> Operands { get; private set; }
-    
-    public LineType LineType { get; private set; }
-}
-
-public enum LineType
-{
-    Comment,
-    Label,
-    Instruction
-}
-
-public enum OperandType
-{
-    Comment,
-    Label,
-    Register,
-    Literal,
-    Address
 }
