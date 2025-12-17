@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 
 namespace ChipEight.Assembler;
@@ -9,7 +10,8 @@ public sealed class Compiler
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(asm);
 
-        var lines = Parser.Parse(asm);
+        var tokens = Tokenizer.FromFile(asm);
+        var lines = Parser.Parse(tokens);
         var symbolMap = SymbolMap.FromParsedLines(lines);
         var binary = Encoder.Encode(symbolMap, lines);
 
@@ -19,9 +21,23 @@ public sealed class Compiler
 
 public class Parser
 {
-    public static ImmutableArray<ParsedLine> Parse(string asm)
+    public static ImmutableArray<ParsedLine> Parse(ImmutableArray<ImmutableArray<string>> tokens)
     {
-        return [];
+        var lines = new List<ParsedLine>();
+
+        foreach (var lineTokens in tokens)
+        {
+            var parsedLine = FromLine(lineTokens);
+            
+            lines.Add(parsedLine);
+        }
+
+        return lines.ToImmutableArray();
+    }
+
+    private static ParsedLine FromLine(ImmutableArray<string> tokens)
+    {
+        return new ParsedLine();
     }
 }
 
@@ -36,6 +52,28 @@ public class SymbolMap
 public class Encoder
 {
     public static byte[] Encode(SymbolMap symbolMap, ImmutableArray<ParsedLine> lines)
+    {
+        return [];
+    }
+}
+
+public class Tokenizer
+{
+    public static ImmutableArray<ImmutableArray<string>> FromFile(string asm)
+    {
+        var tokenLines = new List<ImmutableArray<string>>();
+
+        foreach (var line in asm.Split(Environment.NewLine))
+        {
+            var tokens = FromLine(line);
+
+            tokenLines.Add(tokens);
+        }
+
+        return tokenLines.ToImmutableArray();
+    }
+
+    public static ImmutableArray<string> FromLine(string line)
     {
         return [];
     }
