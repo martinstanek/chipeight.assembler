@@ -78,7 +78,7 @@ public sealed class Operand
 {
     public Operand(string token)
     {
-        OperandType = OperandType.Label;
+        OperandType = OperandType.LabelReference;
     }
     
     public OperandType OperandType { get; private set; }
@@ -92,8 +92,7 @@ public enum LineType
 
 public enum OperandType
 {
-    Label,
+    LabelReference,
     Register,
-    Literal,
-    Address
+    Number
 }

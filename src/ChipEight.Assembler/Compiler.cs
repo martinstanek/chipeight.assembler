@@ -47,8 +47,8 @@ public class Encoder
         {
             if (parsedLine.LineType == LineType.Instruction)
             {
-                var opcpde = _patterns[parsedLine.Instruction].Encode(parsedLine.LineNumber, parsedLine.Operands);
-                var bytes = BitConverter.GetBytes(opcpde);
+                var opcode = _patterns[parsedLine.Instruction].Encode(parsedLine.LineNumber, parsedLine.Operands);
+                var bytes = BitConverter.GetBytes(opcode);
                 
                 bytes.Reverse();
                 
