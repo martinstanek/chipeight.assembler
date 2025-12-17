@@ -1,0 +1,41 @@
+using ChipEight.Assembler;
+using Shouldly;
+using Xunit;
+
+namespace ChipEighy.Assembler.Tests;
+
+public sealed class PatternsTests
+{
+    [Fact]
+    public void PatternClear_InputIsValid_Encodes()
+    {
+        var parsedLine = new ParsedLine(0, ["CLR"]);
+        var pattern = new PatternClear();
+        var opcode = pattern.Encode(0, parsedLine.Operands);
+        
+        opcode.ShouldBe((ushort) 0x00E0);
+    }
+    
+    [Fact]
+    public void PatternReturn_InputIsValid_Encodes()
+    {
+        var parsedLine = new ParsedLine(0, ["RTN"]);
+        var pattern = new PatternReturn();
+        var opcode = pattern.Encode(0, parsedLine.Operands);
+        
+        opcode.ShouldBe((ushort) 0x00EE);
+    }
+    
+    [Theory]
+    [InlineData("10")]
+    [InlineData("0xA")]
+    [InlineData("00001010b")]
+    public void PatternValueToRegister_InputIsValid_Encodes(string value)
+    {
+        var parsedLine = new ParsedLine(0, ["VRG", "VF", value]);
+        var pattern = new PatternValueToRegister();
+        var opcode = pattern.Encode(0, parsedLine.Operands);
+        
+        opcode.ShouldBe((ushort) 0x6F0A);
+    }
+}

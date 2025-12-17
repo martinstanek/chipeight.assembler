@@ -35,6 +35,8 @@ public class Encoder
     public Encoder Build()
     {
         _patterns.Add("CLR", new PatternClear());
+        _patterns.Add("RTN", new PatternReturn());
+        _patterns.Add("VRG", new PatternValueToRegister());
         
         return this;
     }
@@ -47,7 +49,12 @@ public class Encoder
         {
             if (parsedLine.LineType == LineType.Instruction)
             {
-                var opcode = _patterns[parsedLine.Instruction].Encode(parsedLine.LineNumber, parsedLine.Operands);
+                if (!_patterns.TryGetValue(parsedLine.Instruction, out var pattern))
+                {
+                    throw new SyntaxException(parsedLine.LineNumber);
+                }
+
+                var opcode = pattern.Encode(parsedLine.LineNumber, parsedLine.Operands);
                 var bytes = BitConverter.GetBytes(opcode);
                 
                 bytes.Reverse();
@@ -78,7 +85,7 @@ public abstract class InstructionPattern
     public string Keyword { get; private set; }
 }
 
-public class PatternClear : InstructionPattern
+public sealed class PatternClear : InstructionPattern
 {
     public PatternClear() : base("CLR", "Clear") { }
     
@@ -92,3 +99,46 @@ public class PatternClear : InstructionPattern
         return 0x00E0;
     }
 }
+
+public sealed class PatternReturn : InstructionPattern
+{
+    public PatternReturn() : base("RTN", "Return") { }
+    
+    public override ushort Encode(int lineNumber, ImmutableArray<Operand> operands)
+    {
+        if (operands.Length != 0)
+        {
+            throw new SyntaxException(lineNumber);
+        }
+
+        return 0x00EE;
+    }
+}
+
+public sealed class PatternValueToRegister : InstructionPattern
+{
+    public PatternValueToRegister() : base("VRG", "ValueToRegister") {  }
+    
+    public override ushort Encode(int lineNumber, ImmutableArray<Operand> operands)
+    {
+        if (operands.Length != 2)
+        {
+            throw new SyntaxException(lineNumber);
+        }
+
+        if (operands[0].OperandType != OperandType.Register)
+        {
+            throw new SyntaxException(lineNumber);
+        }
+
+        if (operands[1].OperandType != OperandType.Number)
+        {
+            throw new SyntaxException(lineNumber);
+        }
+        
+        var bytes = new[] { (byte) operands[1].Number, (byte) (0x60 + operands[0].Register) };
+        var opcode =  BitConverter.ToUInt16(bytes);
+
+        return opcode;
+    }
+} 

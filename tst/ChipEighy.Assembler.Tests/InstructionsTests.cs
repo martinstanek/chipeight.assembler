@@ -25,6 +25,21 @@ public class InstructionsTests
     }
     
     [Fact]
+    public void Chip_ValueToRegister()
+    {
+        var asm = """
+                  VRG V2 10
+                  """;
+
+        var chip = new Chip();
+        var binary = Compiler.Assemble(asm);
+
+        chip.Load(binary);
+        chip.Run(cycles: 1);
+        chip.Registers.V[2].ShouldBe((byte) 10);
+    }
+    
+    [Fact]
     public void Chip_Jump()
     {
         var chip = new Chip();
@@ -112,16 +127,18 @@ public class InstructionsTests
     [Fact]
     public void Chip_CallAndReturn()
     {
+        var asm = """
+                  CALL 6
+                   VRG V0 1
+                   VRG V0 2
+                   VRG V0 10
+                   RTN
+                  """;
+        
         var chip = new Chip();
-        
-        chip.Load([
-            0x22, 0x06,
-            0x60, 0x01,
-            0x60, 0x02,
-            0x60, 0x0A,
-            0x00, 0xEE
-        ]);
-        
+        var binary = Compiler.Assemble(asm);
+
+        chip.Load(binary);
         chip.Run(cycles: 6);
         
         chip.Registers.Pc.ShouldBe((ushort) 0x208);

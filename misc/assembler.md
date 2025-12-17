@@ -3,7 +3,7 @@
 | CLR      | Clear                    | 0x00E0 | \-                                  | 0x0E0          | CLR                                      | Clear screen                                                           |
 | RTN      | Return                   | 0x00EE | \-                                  | 0x0EE          | RTN                                      | Return from subroutine                                                 |
 | JMP      | Jump                     | 0x1NNN | NNN - memory address                | 0x1220         | JMP 0x220; JMP 544; JMP label            | Jump to address 0x220                                                  |
-| CALL     | Call                     | 0x2NNN | NNN - memory address                | 0x2300         | CALL 0x300; CALL 768                     | Call subroutine at 0x300                                               |
+| CALL     | Call                     | 0x2NNN | NNN - memory address                | 0x2300         | CALL 0x300; CALL 768; CALL label         | Call subroutine at 0x300                                               |
 | SKE      | SkipIfEqual              | 0x3xkk | x- V[x] register, kk - value        | 0x3110         | SKE V1 0x11; SKE V1 17                   | Skip if V[1] == 17                                                     |
 | SKNE     | SkipIfNotEqual           | 0x4xkk | x- V[x] register, kk - value        | 0x4110         | SKNE V1 0x11; SKNE V1 17                 | Skip if V[1] != 17                                                     |
 | SKRE     | SkipIfRegistersEqual     | 0x5xy0 | x- V[x] register, y - V[y] register | 0x52F0         | SKRE V2 VF                               | Skip if V[2] == V[f]                                                   |
