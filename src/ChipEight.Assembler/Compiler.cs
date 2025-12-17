@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 
 namespace ChipEight.Assembler;
 
@@ -75,7 +76,9 @@ public class Tokenizer
 
     public static ImmutableArray<string> FromLine(string line)
     {
-        return [];
+        var split = line.Trim().Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+
+        return split.Select(s => s.Trim()).ToImmutableArray();
     }
 }
 
