@@ -12,11 +12,11 @@ public class InstructionsTests
     [Fact]
     public void Chip_Clear()
     {
-        var chip = new Chip();
         var asm = """
                   CLR 
                   """;
 
+        var chip = new Chip();
         var binary = Compiler.Assemble(asm);
 
         chip.Load(binary);
