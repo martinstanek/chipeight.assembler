@@ -81,14 +81,17 @@ public class InstructionsTests
     [Fact]
     public void Chip_Call()
     {
-        var chip = new Chip();
+        var asm = """
+                  CALL 0x206
+                   VRG V0 1
+                   VRG V0 10
+                   RTN
+                  """;
         
-        chip.Load([
-            0x22, 0x06,
-            0x60, 0x01,
-            0x60, 0x0A,
-            0x00, 0xEE
-        ]);
+        var chip = new Chip();
+        var binary = Compiler.Assemble(asm);
+
+        chip.Load(binary);
         chip.Run(cycles: 4);
         
         chip.Registers.Pc.ShouldBe((ushort) 0x206);
@@ -128,10 +131,10 @@ public class InstructionsTests
     public void Chip_CallAndReturn()
     {
         var asm = """
-                  CALL 6
-                   VRG V0 1
-                   VRG V0 2
-                   VRG V0 10
+                  CALL 0x206
+                   VRG V2 1
+                   VRG V2 2
+                   VRG V2 10
                    RTN
                   """;
         
@@ -143,7 +146,7 @@ public class InstructionsTests
         
         chip.Registers.Pc.ShouldBe((ushort) 0x208);
         chip.Registers.Sp.ShouldBe((byte) 0);
-        chip.Opcode.ShouldNotBeNull().ShouldBe((ushort) 0x600A );
+        chip.Opcode.ShouldNotBeNull().ShouldBe((ushort) 0x620A );
     }
 
     [Fact]

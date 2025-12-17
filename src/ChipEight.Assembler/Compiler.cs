@@ -37,6 +37,7 @@ public class Encoder
         _patterns.Add("CLR", new PatternClear());
         _patterns.Add("RTN", new PatternReturn());
         _patterns.Add("VRG", new PatternValueToRegister());
+        _patterns.Add("CALL", new PatternCall());
         
         return this;
     }
@@ -112,6 +113,33 @@ public sealed class PatternReturn : InstructionPattern
         }
 
         return 0x00EE;
+    }
+}
+
+public sealed class PatternCall : InstructionPattern
+{
+    public PatternCall() : base("CALL", "Call") { }
+    
+    public override ushort Encode(int lineNumber, ImmutableArray<Operand> operands)
+    {
+        if (operands.Length != 1)
+        {
+            throw new SyntaxException(lineNumber);
+        }
+
+        if (operands[0].OperandType == OperandType.Register)
+        {
+            throw new SyntaxException(lineNumber);
+        }
+
+        if (operands[0].OperandType == OperandType.Number)
+        {
+            return (ushort) (0x2000 + operands[0].Number);
+        }
+
+        // TODO: operand is label, i suppose we need to search in the symbol map
+        
+        throw new NotSupportedException();
     }
 }
 

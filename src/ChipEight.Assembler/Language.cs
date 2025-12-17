@@ -1,6 +1,6 @@
 namespace ChipEight.Assembler;
 
-public class Language
+public static class Language
 {
     public const char Comment = '#';
 }

@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace ChipEight.Assembler;
 
-public class Tokenizer
+public static class Tokenizer
 {
     public static ImmutableArray<ImmutableArray<string>> FromFile(string asm)
     {

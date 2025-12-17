@@ -38,4 +38,17 @@ public sealed class PatternsTests
         
         opcode.ShouldBe((ushort) 0x6F0A);
     }
+    
+    [Theory]
+    [InlineData("10")]
+    [InlineData("0xA")]
+    [InlineData("00001010b")]
+    public void PatternCall_InputIsValid_Encodes(string value)
+    {
+        var parsedLine = new ParsedLine(0, ["CALL", value]);
+        var pattern = new PatternCall();
+        var opcode = pattern.Encode(0, parsedLine.Operands);
+        
+        opcode.ShouldBe((ushort) 0x200A);
+    }
 }
