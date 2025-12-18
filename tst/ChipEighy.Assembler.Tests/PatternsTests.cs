@@ -134,6 +134,56 @@ public sealed class PatternsTests
         opcode.ShouldBe((ushort) 0x54F0);
     }
     
+    [Fact]
+    public void PatternMoveRegisterValues_InputIsValid_Encodes()
+    {
+        var parsedLine = new ParsedLine(0, ["MRV", "V4", "VF"]);
+        var pattern = new PatternMoveRegisterValues();
+        var opcode = pattern.Encode(parsedLine);
+        
+        opcode.ShouldBe((ushort) 0x84F0);
+    }
+    
+    [Fact]
+    public void PatternBitwiseOr_InputIsValid_Encodes()
+    {
+        var parsedLine = new ParsedLine(0, ["OR", "V4", "VF"]);
+        var pattern = new PatternBitwiseOr();
+        var opcode = pattern.Encode(parsedLine);
+        
+        opcode.ShouldBe((ushort) 0x84F1);
+    }
+    
+    [Fact]
+    public void PatternBitwiseAnd_InputIsValid_Encodes()
+    {
+        var parsedLine = new ParsedLine(0, ["AND", "V4", "VF"]);
+        var pattern = new PatternBitwiseAnd();
+        var opcode = pattern.Encode(parsedLine);
+        
+        opcode.ShouldBe((ushort) 0x84F2);
+    }
+    
+    [Fact]
+    public void PatternBitwiseXor_InputIsValid_Encodes()
+    {
+        var parsedLine = new ParsedLine(0, ["XOR", "V4", "VF"]);
+        var pattern = new PatternBitwiseXor();
+        var opcode = pattern.Encode(parsedLine);
+        
+        opcode.ShouldBe((ushort) 0x84F3);
+    }
+    
+    [Fact]
+    public void PatternSubtractRegisters_InputIsValid_Encodes()
+    {
+        var parsedLine = new ParsedLine(0, ["SUB", "V4", "VF"]);
+        var pattern = new PatternSubtractRegisters();
+        var opcode = pattern.Encode(parsedLine);
+        
+        opcode.ShouldBe((ushort) 0x84F5);
+    }
+    
     [Theory]
     [InlineData("10")]
     [InlineData("0xA")]

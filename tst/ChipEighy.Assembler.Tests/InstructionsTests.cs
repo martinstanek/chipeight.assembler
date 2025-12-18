@@ -220,14 +220,16 @@ public class InstructionsTests
     [Fact]
     public void Chip_RegistersMove()
     {
+        var asm = """
+                  VRG V0 5
+                  VRG V1 3
+                  MRV V0 V1
+                  """;
+        
         var chip = new Chip();
+        var binary = Compiler.Assemble(asm);
         
-        chip.Load([
-            0x60, 0x05,
-            0x61, 0x03,
-            0x80, 0x10
-        ]);
-        
+        chip.Load(binary);
         chip.Run(cycles: 3);
         
         chip.Registers.V[0].ShouldBe((byte) 0x03);
@@ -236,14 +238,16 @@ public class InstructionsTests
     [Fact]
     public void Chip_RegistersOr()
     {
+        var asm = """
+                  VRG V0 0
+                  VRG V1 0xFF
+                   OR V0 V1
+                  """;
+        
         var chip = new Chip();
+        var binary = Compiler.Assemble(asm);
         
-        chip.Load([
-            0x60, 0x00,
-            0x61, 0xFF,
-            0x80, 0x11
-        ]);
-        
+        chip.Load(binary);
         chip.Run(cycles: 3);
         
         chip.Registers.V[0].ShouldBe((byte) 0xFF);
@@ -252,14 +256,16 @@ public class InstructionsTests
     [Fact]
     public void Chip_RegistersAnd()
     {
+        var asm = """
+                  VRG V0 0xFF
+                  VRG V1 0xF0
+                  AND V0 V1
+                  """;
+        
         var chip = new Chip();
+        var binary = Compiler.Assemble(asm);
         
-        chip.Load([
-            0x60, 0xFF,
-            0x61, 0xF0,
-            0x80, 0x12
-        ]);
-        
+        chip.Load(binary);
         chip.Run(cycles: 3);
         
         chip.Registers.V[0].ShouldBe((byte) 0xF0);
@@ -268,14 +274,16 @@ public class InstructionsTests
     [Fact]
     public void Chip_RegistersXor()
     {
+        var asm = """
+                  VRG V0 0xF0
+                  VRG V1 0xF0
+                  XOR V0 V1
+                  """;
+        
         var chip = new Chip();
+        var binary = Compiler.Assemble(asm);
         
-        chip.Load([
-            0x60, 0xF0,
-            0x61, 0xF0,
-            0x80, 0x13
-        ]);
-        
+        chip.Load(binary);
         chip.Run(cycles: 3);
         
         chip.Registers.V[0].ShouldBe((byte) 0x00);
@@ -318,14 +326,16 @@ public class InstructionsTests
     [Fact]
     public void Chip_RegistersSubtract_NotBorrow()
     {
+        var asm = """
+                  VRG V0 2
+                  VRG V1 1
+                  SUB V0 V1
+                  """;
+        
         var chip = new Chip();
+        var binary = Compiler.Assemble(asm);
         
-        chip.Load([
-            0x60, 0x02,
-            0x61, 0x01,
-            0x80, 0x15
-        ]);
-        
+        chip.Load(binary);
         chip.Run(cycles: 3);
         
         chip.Registers.V[0].ShouldBe((byte) 0x1);

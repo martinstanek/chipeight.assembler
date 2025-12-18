@@ -82,6 +82,11 @@ public class Encoder
         _patterns.Add("SKNE", new PatternSkipIfNotEqual());
         _patterns.Add("SKRE", new PatternSkipIfRegistersEqual());
         _patterns.Add("ADD", new PatternAddValueToRegister());
+        _patterns.Add("MRV", new PatternMoveRegisterValues());
+        _patterns.Add("OR", new PatternBitwiseOr());
+        _patterns.Add("AND", new PatternBitwiseAnd());
+        _patterns.Add("XOR", new PatternBitwiseXor());
+        _patterns.Add("SUB", new PatternSubtractRegisters());
 
         return this;
     }
@@ -385,3 +390,90 @@ public sealed class PatternAddValueToRegister : InstructionPattern
         return BitConverter.ToUInt16([lo, hi]);
     }
 }
+
+public sealed class PatternMoveRegisterValues : InstructionPattern
+{
+    public PatternMoveRegisterValues() : base("MRV", "MoveRegisterValues") { }
+
+    protected override ushort EncodeLine(ParsedLine parsedLine)
+    {
+        ThrowIfNot(count: 2, parsedLine);
+        ThrowIfNot(index: 0, OperandType.Register, parsedLine);
+        ThrowIfNot(index: 1, OperandType.Register, parsedLine);
+
+        var hi = (byte) (0x80 + parsedLine.Operands[0].Register);
+        var lo = (byte) (parsedLine.Operands[1].Register << 4);
+
+        return BitConverter.ToUInt16([lo, hi]);
+    }
+}
+
+public sealed class PatternBitwiseOr : InstructionPattern
+{
+    public PatternBitwiseOr() : base("OR", "BitwiseOr") { }
+
+    protected override ushort EncodeLine(ParsedLine parsedLine)
+    {
+        ThrowIfNot(count: 2, parsedLine);
+        ThrowIfNot(index: 0, OperandType.Register, parsedLine);
+        ThrowIfNot(index: 1, OperandType.Register, parsedLine);
+
+        var hi = (byte) (0x80 + parsedLine.Operands[0].Register);
+        var lo = (byte) ((byte) (parsedLine.Operands[1].Register << 4) + 1);
+
+        return BitConverter.ToUInt16([lo, hi]);
+    }
+}
+
+public sealed class PatternBitwiseAnd : InstructionPattern
+{
+    public PatternBitwiseAnd() : base("AND", "BitwiseAnd") { }
+
+    protected override ushort EncodeLine(ParsedLine parsedLine)
+    {
+        ThrowIfNot(count: 2, parsedLine);
+        ThrowIfNot(index: 0, OperandType.Register, parsedLine);
+        ThrowIfNot(index: 1, OperandType.Register, parsedLine);
+
+        var hi = (byte) (0x80 + parsedLine.Operands[0].Register);
+        var lo = (byte) ((byte) (parsedLine.Operands[1].Register << 4) + 2);
+
+        return BitConverter.ToUInt16([lo, hi]);
+    }
+}
+
+public sealed class PatternBitwiseXor : InstructionPattern
+{
+    public PatternBitwiseXor() : base("XOR", "BitwiseXor") { }
+
+    protected override ushort EncodeLine(ParsedLine parsedLine)
+    {
+        ThrowIfNot(count: 2, parsedLine);
+        ThrowIfNot(index: 0, OperandType.Register, parsedLine);
+        ThrowIfNot(index: 1, OperandType.Register, parsedLine);
+
+        var hi = (byte) (0x80 + parsedLine.Operands[0].Register);
+        var lo = (byte) ((byte) (parsedLine.Operands[1].Register << 4) + 3);
+
+        return BitConverter.ToUInt16([lo, hi]);
+    }
+}
+
+public sealed class PatternSubtractRegisters : InstructionPattern
+{
+    public PatternSubtractRegisters() : base("SUB", "SubtractRegisters") { }
+
+    protected override ushort EncodeLine(ParsedLine parsedLine)
+    {
+        ThrowIfNot(count: 2, parsedLine);
+        ThrowIfNot(index: 0, OperandType.Register, parsedLine);
+        ThrowIfNot(index: 1, OperandType.Register, parsedLine);
+
+        var hi = (byte) (0x80 + parsedLine.Operands[0].Register);
+        var lo = (byte) ((byte) (parsedLine.Operands[1].Register << 4) + 5);
+
+        return BitConverter.ToUInt16([lo, hi]);
+    }
+}
+
+
