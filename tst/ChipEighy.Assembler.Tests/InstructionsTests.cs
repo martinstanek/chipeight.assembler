@@ -580,8 +580,8 @@ public class InstructionsTests
                   continue:
                     CLR    
                   """;
-        
-        var chip = new Chip().WithRemoteDisplay("http://127.0.0.1:8090");
+
+        var chip = new Chip();
         var binary = Compiler.Assemble(asm);
         
         chip.Load(binary);

@@ -95,6 +95,16 @@ public class Encoder
         _patterns.Add("JMPR", new PatternJumpPlusRegister(symbolMap));
         _patterns.Add("ADDI", new PatternAddRegisterToI());
         _patterns.Add("RND", new PatternRandom());
+        _patterns.Add("SKEY", new PatternSkipIfKey());
+        _patterns.Add("SNKEY", new PatternSkipIfNotKey());
+        _patterns.Add("DLR", new PatternDelayToRegister());
+        _patterns.Add("WKEY", new PatternWaitForKey());
+        _patterns.Add("DLY", new PatternDelay());
+        _patterns.Add("BUZZ", new PatternBuzzer());
+        _patterns.Add("FRA", new PatternFontAddressToRegister());
+        _patterns.Add("BCD", new PatternBinaryCodedDecimal());
+        _patterns.Add("SRM", new PatternSaveRegistersToMemory());
+        _patterns.Add("LRM", new PatternLoadRegistersFromMemory());
 
         return this;
     }
@@ -198,6 +208,11 @@ public abstract class InstructionPattern
         }
 
         if (parsedLine.Operands[index].OperandType != type)
+        {
+            throw new SyntaxException(parsedLine.LineNumber);
+        }
+
+        if (type == OperandType.Register && parsedLine.Operands[index].Register > 0xF)
         {
             throw new SyntaxException(parsedLine.LineNumber);
         }
@@ -610,3 +625,152 @@ public sealed class PatternRandom : InstructionPattern
     }
 }
 
+public sealed class PatternSkipIfKey : InstructionPattern
+{
+    public PatternSkipIfKey() : base("SKEY", "SkipIfKey") { }
+
+    protected override ushort EncodeLine(ParsedLine parsedLine)
+    {
+        ThrowIfNot(index: 0, OperandType.Register, parsedLine);
+
+        var hi = (byte) (0xE0 + parsedLine.Operands[0].Register);
+        var lo = (byte) 0x9E;
+
+        return BitConverter.ToUInt16([lo, hi]);
+    }
+}
+
+public sealed class PatternSkipIfNotKey : InstructionPattern
+{
+    public PatternSkipIfNotKey() : base("SNKEY", "SkipIfNotKey") { }
+
+    protected override ushort EncodeLine(ParsedLine parsedLine)
+    {
+        ThrowIfNot(index: 0, OperandType.Register, parsedLine);
+
+        var hi = (byte) (0xE0 + parsedLine.Operands[0].Register);
+        var lo = (byte) 0xA1;
+
+        return BitConverter.ToUInt16([lo, hi]);
+    }
+}
+
+public sealed class PatternDelayToRegister : InstructionPattern
+{
+    public PatternDelayToRegister() : base("DLR", "DelayToRegister") { }
+
+    protected override ushort EncodeLine(ParsedLine parsedLine)
+    {
+        ThrowIfNot(index: 0, OperandType.Register, parsedLine);
+
+        var hi = (byte) (0xF0 + parsedLine.Operands[0].Register);
+        var lo = (byte) 0x07;
+
+        return BitConverter.ToUInt16([lo, hi]);
+    }
+}
+
+public sealed class PatternWaitForKey : InstructionPattern
+{
+    public PatternWaitForKey() : base("WKEY", "WaitForKey") { }
+
+    protected override ushort EncodeLine(ParsedLine parsedLine)
+    {
+        ThrowIfNot(index: 0, OperandType.Register, parsedLine);
+
+        var hi = (byte) (0xF0 + parsedLine.Operands[0].Register);
+        var lo = (byte) 0x0A;
+
+        return BitConverter.ToUInt16([lo, hi]);
+    }
+}
+
+public sealed class PatternDelay : InstructionPattern
+{
+    public PatternDelay() : base("DLY", "Delay") { }
+
+    protected override ushort EncodeLine(ParsedLine parsedLine)
+    {
+        ThrowIfNot(index: 0, OperandType.Register, parsedLine);
+
+        var hi = (byte) (0xF0 + parsedLine.Operands[0].Register);
+        var lo = (byte) 0x15;
+
+        return BitConverter.ToUInt16([lo, hi]);
+    }
+}
+
+public sealed class PatternBuzzer: InstructionPattern
+{
+    public PatternBuzzer() : base("BUZZ", "Buzzer") { }
+
+    protected override ushort EncodeLine(ParsedLine parsedLine)
+    {
+        ThrowIfNot(index: 0, OperandType.Register, parsedLine);
+
+        var hi = (byte) (0xF0 + parsedLine.Operands[0].Register);
+        var lo = (byte) 0x18;
+
+        return BitConverter.ToUInt16([lo, hi]);
+    }
+}
+
+public sealed class PatternFontAddressToRegister: InstructionPattern
+{
+    public PatternFontAddressToRegister() : base("FRA", "FontAddressToRegister") { }
+
+    protected override ushort EncodeLine(ParsedLine parsedLine)
+    {
+        ThrowIfNot(index: 0, OperandType.Register, parsedLine);
+
+        var hi = (byte) (0xF0 + parsedLine.Operands[0].Register);
+        var lo = (byte) 0x29;
+
+        return BitConverter.ToUInt16([lo, hi]);
+    }
+}
+
+public sealed class PatternBinaryCodedDecimal: InstructionPattern
+{
+    public PatternBinaryCodedDecimal() : base("BCD", "BinaryCodedDecimal") { }
+
+    protected override ushort EncodeLine(ParsedLine parsedLine)
+    {
+        ThrowIfNot(index: 0, OperandType.Register, parsedLine);
+
+        var hi = (byte) (0xF0 + parsedLine.Operands[0].Register);
+        var lo = (byte) 0x33;
+
+        return BitConverter.ToUInt16([lo, hi]);
+    }
+}
+
+public sealed class PatternSaveRegistersToMemory: InstructionPattern
+{
+    public PatternSaveRegistersToMemory() : base("SRM", "SaveRegistersToMemory") { }
+
+    protected override ushort EncodeLine(ParsedLine parsedLine)
+    {
+        ThrowIfNot(index: 0, OperandType.Register, parsedLine);
+
+        var hi = (byte) (0xF0 + parsedLine.Operands[0].Register);
+        var lo = (byte) 0x55;
+
+        return BitConverter.ToUInt16([lo, hi]);
+    }
+}
+
+public sealed class PatternLoadRegistersFromMemory: InstructionPattern
+{
+    public PatternLoadRegistersFromMemory() : base("LRM", "LoadRegistersFromMemory") { }
+
+    protected override ushort EncodeLine(ParsedLine parsedLine)
+    {
+        ThrowIfNot(index: 0, OperandType.Register, parsedLine);
+
+        var hi = (byte) (0xF0 + parsedLine.Operands[0].Register);
+        var lo = (byte) 0x65;
+
+        return BitConverter.ToUInt16([lo, hi]);
+    }
+}

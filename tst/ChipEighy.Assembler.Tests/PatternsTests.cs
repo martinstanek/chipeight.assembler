@@ -304,4 +304,104 @@ public sealed class PatternsTests
         
         opcode.ShouldBe((ushort) 0x720A);
     }
+
+    [Fact]
+    public void PatternSkipIfKey_InputIsValid_Encodes()
+    {
+        var parsedLine = new ParsedLine(0, ["SKEY", "V4"]);
+        var pattern = new PatternSkipIfKey();
+        var opcode = pattern.Encode(parsedLine);
+
+        opcode.ShouldBe((ushort) 0xE49E);
+    }
+
+    [Fact]
+    public void PatternSkipIfNotKey_InputIsValid_Encodes()
+    {
+        var parsedLine = new ParsedLine(0, ["SNKEY", "V4"]);
+        var pattern = new PatternSkipIfNotKey();
+        var opcode = pattern.Encode(parsedLine);
+
+        opcode.ShouldBe((ushort) 0xE4A1);
+    }
+
+    [Fact]
+    public void PatternDelayToRegister_InputIsValid_Encodes()
+    {
+        var parsedLine = new ParsedLine(0, ["DLR", "V4"]);
+        var pattern = new PatternDelayToRegister();
+        var opcode = pattern.Encode(parsedLine);
+
+        opcode.ShouldBe((ushort) 0xF407);
+    }
+
+    [Fact]
+    public void PatternWaitForKey_InputIsValid_Encodes()
+    {
+        var parsedLine = new ParsedLine(0, ["WKEY", "V4"]);
+        var pattern = new PatternWaitForKey();
+        var opcode = pattern.Encode(parsedLine);
+
+        opcode.ShouldBe((ushort) 0xF40A);
+    }
+
+    [Fact]
+    public void PatternDelay_InputIsValid_Encodes()
+    {
+        var parsedLine = new ParsedLine(0, ["DLY", "V4"]);
+        var pattern = new PatternDelay();
+        var opcode = pattern.Encode(parsedLine);
+
+        opcode.ShouldBe((ushort) 0xF415);
+    }
+
+    [Fact]
+    public void PatternBuzzer_InputIsValid_Encodes()
+    {
+        var parsedLine = new ParsedLine(0, ["BUZZ", "V4"]);
+        var pattern = new PatternBuzzer();
+        var opcode = pattern.Encode(parsedLine);
+
+        opcode.ShouldBe((ushort) 0xF418);
+    }
+
+    [Fact]
+    public void PatternFontAddressToRegister_InputIsValid_Encodes()
+    {
+        var parsedLine = new ParsedLine(0, ["FRA", "V4"]);
+        var pattern = new PatternFontAddressToRegister();
+        var opcode = pattern.Encode(parsedLine);
+
+        opcode.ShouldBe((ushort) 0xF429);
+    }
+
+    [Fact]
+    public void PatternBinaryCodedDecimal_InputIsValid_Encodes()
+    {
+        var parsedLine = new ParsedLine(0, ["BCD", "V4"]);
+        var pattern = new PatternBinaryCodedDecimal();
+        var opcode = pattern.Encode(parsedLine);
+
+        opcode.ShouldBe((ushort) 0xF433);
+    }
+
+    [Fact]
+    public void PatternSaveRegistersToMemory_InputIsValid_Encodes()
+    {
+        var parsedLine = new ParsedLine(0, ["SRM", "V4"]);
+        var pattern = new PatternSaveRegistersToMemory();
+        var opcode = pattern.Encode(parsedLine);
+
+        opcode.ShouldBe((ushort) 0xF455);
+    }
+
+    [Fact]
+    public void PatternLoadRegistersFromMemory_InputIsValid_Encodes()
+    {
+        var parsedLine = new ParsedLine(0, ["LRM", "V4"]);
+        var pattern = new PatternLoadRegistersFromMemory();
+        var opcode = pattern.Encode(parsedLine);
+
+        opcode.ShouldBe((ushort) 0xF465);
+    }
 }
