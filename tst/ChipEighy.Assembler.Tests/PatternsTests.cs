@@ -74,6 +74,21 @@ public sealed class PatternsTests
     [InlineData("10")]
     [InlineData("0xA")]
     [InlineData("00001010b")]
+    [InlineData("label")]
+    public void PatternJumpPlusRegister_InputIsValid_Encodes(string value)
+    {
+        var symbolMap = new SymbolMap(new Dictionary<string, ushort> { { "label", 0x00A } });
+        var parsedLine = new ParsedLine(0, ["JMPR", value]);
+        var pattern = new PatternJumpPlusRegister(symbolMap);
+        var opcode = pattern.Encode(parsedLine);
+        
+        opcode.ShouldBe((ushort) 0xB00A);
+    }
+    
+    [Theory]
+    [InlineData("10")]
+    [InlineData("0xA")]
+    [InlineData("00001010b")]
     public void PatternDrawSprite_InputIsValid_Encodes(string value)
     {
         var parsedLine = new ParsedLine(0, ["DRW", "V1", "V2", value]);
@@ -182,6 +197,16 @@ public sealed class PatternsTests
         var opcode = pattern.Encode(parsedLine);
         
         opcode.ShouldBe((ushort) 0x84F5);
+    }
+    
+    [Fact]
+    public void PatternSubtractRegistersReverse_InputIsValid_Encodes()
+    {
+        var parsedLine = new ParsedLine(0, ["SUBR", "V4", "VF"]);
+        var pattern = new PatternSubtractRegistersReverse();
+        var opcode = pattern.Encode(parsedLine);
+        
+        opcode.ShouldBe((ushort) 0x84F7);
     }
     
     [Fact]

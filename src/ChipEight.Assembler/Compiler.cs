@@ -91,6 +91,8 @@ public class Encoder
         _patterns.Add("SHR", new PatternShiftRightRegister());
         _patterns.Add("SHL", new PatternShiftLeftRegister());
         _patterns.Add("SKRNE", new PatternSkipIfRegistersNotEqual());
+        _patterns.Add("SUBR", new PatternSubtractRegistersReverse());
+        _patterns.Add("JMPR", new PatternJumpPlusRegister(symbolMap));
 
         return this;
     }
@@ -537,6 +539,54 @@ public sealed class PatternSkipIfRegistersNotEqual : InstructionPattern
 
         var hi = (byte) (0x90 + parsedLine.Operands[0].Register);
         var lo = ((byte)(parsedLine.Operands[1].Register << 4));
+
+        return BitConverter.ToUInt16([lo, hi]);
+    }
+}
+
+public sealed class PatternSubtractRegistersReverse : InstructionPattern
+{
+    public PatternSubtractRegistersReverse() : base("SUBR", "SubtractRegistersReverse") { }
+
+    protected override ushort EncodeLine(ParsedLine parsedLine)
+    {
+        ThrowIfNot(index: 0, OperandType.Register, parsedLine);
+        ThrowIfNot(index: 1, OperandType.Register, parsedLine);
+
+        var hi = (byte) (0x80 + parsedLine.Operands[0].Register);
+        var lo = (byte) ((byte) (parsedLine.Operands[1].Register << 4) + 7);
+
+        return BitConverter.ToUInt16([lo, hi]);
+    }
+}
+
+public sealed class PatternJumpPlusRegister : InstructionPattern
+{
+    public PatternJumpPlusRegister(SymbolMap symbolMap) : base("JMPR", "JumpPlusRegister", symbolMap) { }
+    
+    protected override ushort EncodeLine(ParsedLine parsedLine)
+    {
+        ThrowIf(index: 0, OperandType.Register, parsedLine);
+
+        var address = parsedLine.Operands[0].OperandType == OperandType.Number
+            ? parsedLine.Operands[0].Number
+            : Map.GetLabelAddress(parsedLine.LineNumber, parsedLine.Operands[0].Label);
+
+        return (ushort) (0xB000 + address);
+    }
+}
+
+public sealed class PatternSkipIfEqual : InstructionPattern
+{
+    public PatternSkipIfEqual() : base("SKE", "SkipIfEqual") { }
+
+    protected override ushort EncodeLine(ParsedLine parsedLine)
+    {
+        ThrowIfNot(index: 0, OperandType.Register, parsedLine);
+        ThrowIfNot(index: 1, OperandType.Number, parsedLine);
+
+        var hi = (byte) (0x30 + parsedLine.Operands[0].Register);
+        var lo = (byte) parsedLine.Operands[1].Number;
 
         return BitConverter.ToUInt16([lo, hi]);
     }

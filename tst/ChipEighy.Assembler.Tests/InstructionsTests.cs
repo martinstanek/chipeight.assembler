@@ -388,14 +388,16 @@ public class InstructionsTests
     [Fact]
     public void Chip_RegistersSubtractReverse_WithBorrow()
     {
+        var asm = """
+                  VRG V0 2
+                  VRG V1 1
+                  SUBR V0 V1
+                  """;
+        
         var chip = new Chip();
-        
-        chip.Load([
-            0x60, 0x02,
-            0x61, 0x01,
-            0x80, 0x17
-        ]);
-        
+        var binary = Compiler.Assemble(asm);
+
+        chip.Load(binary);
         chip.Run(cycles: 3);
         
         chip.Registers.V[0].ShouldBe((byte) 0xFF);
@@ -441,6 +443,12 @@ public class InstructionsTests
     [Fact]
     public void Chip_AddRegisterToI()
     {
+        var asm = """
+                  VRG V0 1
+                   VI 1
+                   
+                  """;
+        
         var chip = new Chip();
         
         chip.Load([
