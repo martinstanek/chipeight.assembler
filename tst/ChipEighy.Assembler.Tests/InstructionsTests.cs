@@ -629,4 +629,32 @@ public class InstructionsTests
         
         chip.Registers.V[0].ShouldBe((byte) 3);
     }
+
+    [Fact]
+    public void Chip_NestedCalls()
+    {
+        var asm = """
+                  main:
+                     CALL subroutine1
+                      JMP end
+                  
+                  subroutine1:
+                     CALL subroutine2
+                      RTN
+                  
+                  subroutine2:
+                      VRG V0 9
+                      RTN
+                  
+                  end:
+                      JMP end
+                  """;
+        var chip = new Chip();
+        var binary = Compiler.Assemble(asm);
+
+        chip.Load(binary);
+        chip.Run(cycles: 10);
+        
+        chip.Registers.V[0].ShouldBe((byte) 9);
+    }
 }
