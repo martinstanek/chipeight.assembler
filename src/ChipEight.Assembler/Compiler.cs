@@ -38,6 +38,7 @@ public class Encoder
         _patterns.Add("RTN", new PatternReturn());
         _patterns.Add("VRG", new PatternValueToRegister());
         _patterns.Add("CALL", new PatternCall());
+        _patterns.Add("VI", new PatternValueToI());
         
         return this;
     }
@@ -81,6 +82,30 @@ public abstract class InstructionPattern
 
     public abstract ushort Encode(int lineNumber, ImmutableArray<Operand> operands);
 
+    protected void ThrowIfNot(byte index, int lineNumber, OperandType type, ImmutableArray<Operand> operands)
+    {
+        if (operands[index].OperandType != type)
+        {
+            throw new SyntaxException(lineNumber);
+        }
+    }
+    
+    protected void ThrowIf(byte index, int lineNumber, OperandType type, ImmutableArray<Operand> operands)
+    {
+        if (operands[index].OperandType == type)
+        {
+            throw new SyntaxException(lineNumber);
+        }
+    }
+    
+    protected void ThrowIfNot(byte count, int lineNumber, ImmutableArray<Operand> operands)
+    {
+        if (operands.Length != count)
+        {
+            throw new SyntaxException(lineNumber);
+        }
+    }
+
     public string Mnemonic { get; private set; }
 
     public string Keyword { get; private set; }
@@ -92,10 +117,7 @@ public sealed class PatternClear : InstructionPattern
     
     public override ushort Encode(int lineNumber, ImmutableArray<Operand> operands)
     {
-        if (operands.Length != 0)
-        {
-            throw new SyntaxException(lineNumber);
-        }
+        ThrowIfNot(count: 0, lineNumber, operands);
 
         return 0x00E0;
     }
@@ -107,10 +129,7 @@ public sealed class PatternReturn : InstructionPattern
     
     public override ushort Encode(int lineNumber, ImmutableArray<Operand> operands)
     {
-        if (operands.Length != 0)
-        {
-            throw new SyntaxException(lineNumber);
-        }
+        ThrowIfNot(count: 0, lineNumber, operands);
 
         return 0x00EE;
     }
@@ -122,15 +141,8 @@ public sealed class PatternCall : InstructionPattern
     
     public override ushort Encode(int lineNumber, ImmutableArray<Operand> operands)
     {
-        if (operands.Length != 1)
-        {
-            throw new SyntaxException(lineNumber);
-        }
-
-        if (operands[0].OperandType == OperandType.Register)
-        {
-            throw new SyntaxException(lineNumber);
-        }
+        ThrowIfNot(count: 1, lineNumber, operands);
+        ThrowIf(index: 0, lineNumber, OperandType.Register, operands);
 
         if (operands[0].OperandType == OperandType.Number)
         {
@@ -149,24 +161,45 @@ public sealed class PatternValueToRegister : InstructionPattern
     
     public override ushort Encode(int lineNumber, ImmutableArray<Operand> operands)
     {
-        if (operands.Length != 2)
-        {
-            throw new SyntaxException(lineNumber);
-        }
-
-        if (operands[0].OperandType != OperandType.Register)
-        {
-            throw new SyntaxException(lineNumber);
-        }
-
-        if (operands[1].OperandType != OperandType.Number)
-        {
-            throw new SyntaxException(lineNumber);
-        }
+        ThrowIfNot(count: 2, lineNumber, operands);
+        ThrowIfNot(index: 0, lineNumber, OperandType.Register, operands);
+        ThrowIfNot(index: 1, lineNumber, OperandType.Number, operands);
         
-        var bytes = new[] { (byte) operands[1].Number, (byte) (0x60 + operands[0].Register) };
-        var opcode =  BitConverter.ToUInt16(bytes);
-
-        return opcode;
+        var hi = (byte) (0x60 + operands[0].Register);
+        var lo = (byte) operands[1].Number;
+        
+        return  BitConverter.ToUInt16([lo, hi]);
     }
-} 
+}
+
+public sealed class PatternValueToI : InstructionPattern
+{
+    public PatternValueToI() : base("VI", "ValueToI") { }
+    
+    public override ushort Encode(int lineNumber, ImmutableArray<Operand> operands)
+    {
+        ThrowIfNot(count: 1, lineNumber, operands);
+        ThrowIfNot(index: 0, lineNumber, OperandType.Number, operands);
+
+        return (ushort) (0xA000 + operands[0].Number);
+    }
+}
+
+public sealed class PatternDrawSprite : InstructionPattern
+{
+    public PatternDrawSprite() : base("DRWS", "DrawSprite") { }
+
+
+    public override ushort Encode(int lineNumber, ImmutableArray<Operand> operands)
+    {
+        ThrowIfNot(count: 3, lineNumber, operands);
+        ThrowIfNot(index: 0, lineNumber, OperandType.Register, operands);
+        ThrowIfNot(index: 1, lineNumber, OperandType.Register, operands);
+        ThrowIfNot(index: 2, lineNumber, OperandType.Number, operands);
+
+        var hi = (byte) (0xD0 + operands[0].Register);
+        var lo = (byte) ((operands[1].Register << 4) + (byte) operands[2].Number);
+
+        return BitConverter.ToUInt16([lo, hi]);
+    }
+}

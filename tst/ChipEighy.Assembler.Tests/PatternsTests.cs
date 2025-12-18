@@ -51,4 +51,30 @@ public sealed class PatternsTests
         
         opcode.ShouldBe((ushort) 0x200A);
     }
+    
+    [Theory]
+    [InlineData("10")]
+    [InlineData("0xA")]
+    [InlineData("00001010b")]
+    public void ValueToI_InputIsValid_Encodes(string value)
+    {
+        var parsedLine = new ParsedLine(0, ["VI", value]);
+        var pattern = new PatternValueToI();
+        var opcode = pattern.Encode(0, parsedLine.Operands);
+        
+        opcode.ShouldBe((ushort) 0xA00A);
+    }
+    
+    [Theory]
+    [InlineData("10")]
+    [InlineData("0xA")]
+    [InlineData("00001010b")]
+    public void DrawSprite_InputIsValid_Encodes(string value)
+    {
+        var parsedLine = new ParsedLine(0, ["DRWS", "V1", "V2", value]);
+        var pattern = new PatternDrawSprite();
+        var opcode = pattern.Encode(0, parsedLine.Operands);
+        
+        opcode.ShouldBe((ushort) 0xD12A);
+    }
 }

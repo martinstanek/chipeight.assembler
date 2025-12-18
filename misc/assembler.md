@@ -19,7 +19,7 @@
 | SUBR     | SubtractRegistersReverse | 0x8xy7 | x- V[x] register, y - V[y] register | 0x8347         | SUBR V3 V4                               | Set subtraction of the V[4] and V[3] into the V[3], V[3] = V[4] - V[3] |
 | SHL      | ShiftLeftRegister        | 0x8xyE | x- V[x] register, y - V[y] register | 0x834E         | SHL V3                                   | Shift left V[3], V[3] := V[3] << 1  (The V[4] is ignored)              |
 | SKRNE    | SkipIfRegistersNotEqual  | 0x9xy0 | x- V[x] register, y - V[y] register | 0x9450         | SKRNE V4 V5                              | Skip if V[4] != V[5]                                                   |
-| VI       | ValueToI                 | 0xAkkk | kkk - value                         | 0xA300         | VI 0x300; VI 768                         | Set value 768 into the I register                                      |
+| VI       | ValueToI                 | 0xAkkk | kkk - value                         | 0xA300         | VI 0x300; VI 76, VI label                | Set value 768 into the I register                                      |
 | JMPR     | JumpPlusRegister         | 0xBNNN | NNN - memory address                | 0xB310         | JMPR 0x300; JMPR 768                     | Jump to address 0x300 + value in register V0                           |
 | RND      | Random                   | 0xCxkk | x- V[x] register, kk - value        | 0xC120         | RND V1 0x20; RND V1 32                   | Set random number AND 32 into the register V[1]                        |
 | DRWS     | DrawSprite               | 0xDxyn | x- V[x], y- V[y], n - sprite height | 0xD453         | DRWS V4 V5 0x3; DRWS V4 V5 3             | Draw sprite at coordinates V4,V5 (sprite height is 3)                  |
