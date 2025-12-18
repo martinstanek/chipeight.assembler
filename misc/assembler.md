@@ -22,7 +22,7 @@
 | VI       | ValueToI                 | 0xAkkk | kkk - value                         | 0xA300         | VI 0x300; VI 76, VI label                | Set value 768 into the I register                                      |
 | JMPR     | JumpPlusRegister         | 0xBNNN | NNN - memory address                | 0xB310         | JMPR 0x300; JMPR 768                     | Jump to address 0x300 + value in register V0                           |
 | RND      | Random                   | 0xCxkk | x- V[x] register, kk - value        | 0xC120         | RND V1 0x20; RND V1 32                   | Set random number AND 32 into the register V[1]                        |
-| DRWS     | DrawSprite               | 0xDxyn | x- V[x], y- V[y], n - sprite height | 0xD453         | DRWS V4 V5 0x3; DRWS V4 V5 3             | Draw sprite at coordinates V4,V5 (sprite height is 3)                  |
+| DRW      | DrawSprite               | 0xDxyn | x- V[x], y- V[y], n - sprite height | 0xD453         | DRW V4 V5 0x3; DRW V4 V5 3               | Draw sprite at coordinates V4,V5 (sprite height is 3)                  |
 | SKEY     | SkipIfKey                | 0xEx9E | x- V[x] register                    | 0xE39E         | SKEY V3                                  | Skip if key[V[3]] is pressed                                           |
 | SNKEY    | SkipIfNotKey             | 0xExA1 | x- V[x] register                    | 0xE3A1         | SNKEY V3                                 | Skip if key[V[3]] is not pressed                                       |
 | DLR      | DelayToRegister          | 0xFx07 | x- V[x] register                    | 0xF507         | DLR V5                                   | Set delay value into the register V[5]                                 |

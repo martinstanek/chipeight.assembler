@@ -513,24 +513,17 @@ public class InstructionsTests
                     VRG V2 0 
                     VRG V3 0 
                      VI 0x20A 
-                   DRWS V2 V3 6
+                    DRW V2 V3 6
                     JMP 0x208
                         00100000b 01110000b
                         01110000b 11111000b
                         11011000b 10001000b
                   """;
         
-        var chip = new Chip();
+        var chip = new Chip().WithRemoteDisplay("http://127.0.0.1:8090");
+        var binary = Compiler.Assemble(asm);
         
-        chip.Load([
-            0x62, 0x00, 
-            0x63, 0x00, 
-            0xA2, 0x0A, 
-            0xD2, 0x36, 
-            0x12, 0x08,
-            0x20, 0x70, 
-            0x70, 0xF8, 
-            0xD8, 0x88]);
+        chip.Load(binary);
         chip.Run(cycles: 8);
     }
 }

@@ -51,9 +51,18 @@ public sealed class ParsedLine
             return;
         }
 
-        Instruction = tokens[0];
-
         var operands = new List<Operand>();
+        
+        if (IsNumber(tokens[0]))
+        {
+            LineType = LineType.Data;
+            operands.Add(new Operand(lineNumber, tokens[0]));
+        }
+        else
+        {
+            LineType = LineType.Instruction;
+            Instruction = tokens[0];
+        }
         
         for (var t = 1; t < tokens.Length; t++)
         {
@@ -61,6 +70,26 @@ public sealed class ParsedLine
         }
 
         Operands = operands.ToImmutableArray();
+    }
+
+    private static bool IsNumber(string token)
+    {
+        if (ushort.TryParse(token, NumberStyles.Integer, null, out _))
+        {
+            return true;
+        }
+        
+        if (ushort.TryParse(token.Replace("0x", ""), NumberStyles.HexNumber, null, out _))
+        {
+            return true;
+        }
+        
+        if (ushort.TryParse(token.Replace("b", ""), NumberStyles.BinaryNumber, null, out _))
+        {
+            return true;
+        }
+
+        return false;
     }
 
     public int LineNumber { get; private set; }
@@ -147,7 +176,8 @@ public sealed class Operand
 public enum LineType
 {
     Label,
-    Instruction
+    Instruction,
+    Data
 }
 
 public enum OperandType

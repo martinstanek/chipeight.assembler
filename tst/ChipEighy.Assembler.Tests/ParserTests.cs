@@ -21,4 +21,17 @@ public sealed class ParserTests
         line.Label.ShouldBe(label);
         line.LineType.ShouldBe(lineType);
     }
+    
+    [Theory]
+    [InlineData(new [] { "0xAA", "0xFF" }, 2)]
+    [InlineData(new [] { "0xAAFF" }, 1)]
+    [InlineData(new [] { "10", "11" }, 2)]
+    [InlineData(new [] { "00001111b", "11110000b" }, 2)]
+    public void ParsedLine_InputIsValidData_ExpectedTypeAndOperandCount(string[] tokens, int operands)
+    {
+        var line = new ParsedLine(0, tokens.ToImmutableArray());
+        
+        line.Operands.Length.ShouldBe(operands);
+        line.LineType.ShouldBe(LineType.Data);
+    }
 }
