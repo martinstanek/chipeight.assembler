@@ -2,12 +2,16 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <AssemblyName>chipeight</AssemblyName>
+        <AssemblyName>chipeightasm</AssemblyName>
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <PublishAot>true</PublishAot>
     </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\ChipEight.Assembler\ChipEight.Assembler.csproj" />
+    </ItemGroup>
 
 </Project>

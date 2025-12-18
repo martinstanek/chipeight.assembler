@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Text;
 using ChipEight.Assembler.Exceptions;
 
 namespace ChipEight.Assembler;
@@ -9,12 +10,19 @@ public sealed class Compiler
 {
     public static byte[] Assemble(string asm)
     {
+        return Assemble(asm, out _);
+    }
+
+    public static byte[] Assemble(string asm, out string symbols)
+    {
         ArgumentException.ThrowIfNullOrWhiteSpace(asm);
 
         var tokens = Tokenizer.FromFile(asm);
         var lines = Parser.Parse(tokens);
         var symbolMap = SymbolMap.FromParsedLines(lines);
         var binary = new Encoder().Build(symbolMap).Encode(lines);
+
+        symbols = symbolMap.ToString();
 
         return binary;
     }
@@ -62,6 +70,18 @@ public class SymbolMap
         }
 
         return address;
+    }
+
+    public override string ToString()
+    {
+        var sb = new StringBuilder();
+        
+        foreach (var map in _table)
+        {
+            sb.AppendLine($"{map.Key}:{map.Value.ToString("X")}");
+        }
+
+        return sb.ToString();
     }
 }
 

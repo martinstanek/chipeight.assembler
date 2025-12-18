@@ -111,7 +111,7 @@ public class InstructionsTests
     public void Chip_SkipIfNotKey()
     {
         var asm = """
-                   VRG V1 2
+                    VRG V1 2
                   SNKEY V1
                   """;
         
