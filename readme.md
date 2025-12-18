@@ -4,7 +4,7 @@
 
 
 ```asm 
-# draw a space-ship as seen in Byte Magazine '78
+ // draw a space-ship as seen in Byte Magazine '78
  main:
     VRG V2 0 
     VRG V3 0 
