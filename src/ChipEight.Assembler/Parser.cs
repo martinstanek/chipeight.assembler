@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
+using System.Linq;
 using ChipEight.Assembler.Exceptions;
 
 namespace ChipEight.Assembler;
@@ -53,7 +54,7 @@ public sealed class ParsedLine
 
         var operands = new List<Operand>();
         
-        if (IsNumber(tokens[0]))
+        if (tokens.All(IsNumber))
         {
             LineType = LineType.Data;
             operands.Add(new Operand(lineNumber, tokens[0]));

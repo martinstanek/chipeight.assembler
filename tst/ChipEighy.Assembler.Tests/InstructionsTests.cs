@@ -178,20 +178,22 @@ public class InstructionsTests
         
         chip.Registers.V[1].ShouldBe((byte) 0x02);
     }
-    
+
     [Fact]
     public void Chip_SkipIfRegistersEqual()
     {
+        var asm = """
+                   VRG V0 5
+                   VRG V1 5 
+                  SKRE V0 V1
+                   VRG V0 1
+                   VRG V0 2
+                  """;
+
         var chip = new Chip();
+        var binary = Compiler.Assemble(asm);
         
-        chip.Load([
-            0x60, 0x05,
-            0x61, 0x05,
-            0x50, 0x10,
-            0x60, 0x01,
-            0x60, 0x02
-        ]);
-        
+        chip.Load(binary);
         chip.Run(cycles: 4);
         
         chip.Registers.V[0].ShouldBe((byte) 0x02);

@@ -124,16 +124,26 @@ public sealed class PatternsTests
         opcode.ShouldBe((ushort) 0x420A);
     }
     
+    [Fact]
+    public void PatternSkipIfRegistersEqual_InputIsValid_Encodes()
+    {
+        var parsedLine = new ParsedLine(0, ["SKRE", "V4", "VF"]);
+        var pattern = new PatternSkipIfRegistersEqual();
+        var opcode = pattern.Encode(parsedLine);
+        
+        opcode.ShouldBe((ushort) 0x54F0);
+    }
+    
     [Theory]
     [InlineData("10")]
     [InlineData("0xA")]
     [InlineData("00001010b")]
-    public void PatternSkipIfRegistersEqual_InputIsValid_Encodes(string value)
+    public void PatternAddValueToRegister_InputIsValid_Encodes(string value)
     {
-        var parsedLine = new ParsedLine(0, ["SKRE", "V2", value]);
-        var pattern = new PatternSkipIfRegistersEqual();
+        var parsedLine = new ParsedLine(0, ["ADD", "V2", value]);
+        var pattern = new PatternAddValueToRegister();
         var opcode = pattern.Encode(parsedLine);
         
-        opcode.ShouldBe((ushort) 0x520A);
+        opcode.ShouldBe((ushort) 0x720A);
     }
 }

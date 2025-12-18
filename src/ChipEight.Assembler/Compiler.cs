@@ -80,6 +80,8 @@ public class Encoder
         _patterns.Add("VI", new PatternValueToI(symbolMap));
         _patterns.Add("SKE", new PatternSkipIfEqual());
         _patterns.Add("SKNE", new PatternSkipIfNotEqual());
+        _patterns.Add("SKRE", new PatternSkipIfRegistersEqual());
+        _patterns.Add("ADD", new PatternAddValueToRegister());
 
         return this;
     }
@@ -358,9 +360,26 @@ public sealed class PatternSkipIfRegistersEqual : InstructionPattern
     {
         ThrowIfNot(count: 2, parsedLine);
         ThrowIfNot(index: 0, OperandType.Register, parsedLine);
-        ThrowIfNot(index: 1, OperandType.Number, parsedLine);
+        ThrowIfNot(index: 1, OperandType.Register, parsedLine);
 
         var hi = (byte) (0x50 + parsedLine.Operands[0].Register);
+        var lo = (byte) (parsedLine.Operands[1].Register << 4);
+
+        return BitConverter.ToUInt16([lo, hi]);
+    }
+}
+
+public sealed class PatternAddValueToRegister : InstructionPattern
+{
+    public PatternAddValueToRegister() : base("ADD", "AddValueToRegister") { }
+
+    protected override ushort EncodeLine(ParsedLine parsedLine)
+    {
+        ThrowIfNot(count: 2, parsedLine);
+        ThrowIfNot(index: 0, OperandType.Register, parsedLine);
+        ThrowIfNot(index: 1, OperandType.Number, parsedLine);
+
+        var hi = (byte) (0x70 + parsedLine.Operands[0].Register);
         var lo = (byte) parsedLine.Operands[1].Number;
 
         return BitConverter.ToUInt16([lo, hi]);
