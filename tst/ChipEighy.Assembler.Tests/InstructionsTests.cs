@@ -525,5 +525,11 @@ public class InstructionsTests
         
         chip.Load(binary);
         chip.Run(cycles: 8);
+        chip.Memory.Raw[0x20A].ShouldBe((byte) 0x20);
+        chip.Memory.Raw[0x20A + 1].ShouldBe((byte) 0x70);
+        chip.Memory.Raw[0x20A + 2].ShouldBe((byte) 0x70);
+        chip.Memory.Raw[0x20A + 3].ShouldBe((byte) 0xF8);
+        chip.Memory.Raw[0x20A + 4].ShouldBe((byte) 0xD8);
+        chip.Memory.Raw[0x20A + 5].ShouldBe((byte) 0x88);
     }
 }
