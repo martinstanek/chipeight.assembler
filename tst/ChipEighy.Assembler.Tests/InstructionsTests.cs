@@ -602,4 +602,31 @@ public class InstructionsTests
         chip.Memory.Raw[0x20A + 4].ShouldBe((byte) 0xD8);
         chip.Memory.Raw[0x20A + 5].ShouldBe((byte) 0x88);
     }
+
+    [Fact]
+    public void Chip_CallRtn()
+    {
+        var asm = """
+                  start:        
+                          VRG V0 1
+                          CALL sub
+                          VRG V0 3
+                          JMP end
+
+                  sub:
+                          VRG V0 2
+                          RTN
+
+                  end:
+                          JMP end
+                  """;
+
+        var chip = new Chip();
+        var binary = Compiler.Assemble(asm);
+
+        chip.Load(binary);
+        chip.Run(cycles: 6);
+        
+        chip.Registers.V[0].ShouldBe((byte) 3);
+    }
 }
