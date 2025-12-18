@@ -202,16 +202,17 @@ public class InstructionsTests
     [Fact]
     public void Chip_SkipIfRegistersNotEqual()
     {
+        var asm = """
+                  VRG V0 5
+                  VRG V1 3
+                  SKRNE V0 V1
+                  VRG V0 1
+                  VRG V0 2
+                  """;
         var chip = new Chip();
+        var binary = Compiler.Assemble(asm);
         
-        chip.Load([
-            0x60, 0x05,
-            0x61, 0x03,
-            0x90, 0x10,
-            0x60, 0x01,
-            0x60, 0x02
-        ]);
-        
+        chip.Load(binary);
         chip.Run(cycles: 4);
         
         chip.Registers.V[0].ShouldBe((byte) 0x02);
@@ -404,13 +405,15 @@ public class InstructionsTests
     [Fact]
     public void Chip_RegistersShiftRight()
     {
+        var asm = """
+                  VRG V0 2
+                  SHR V0
+                  """;
+        
         var chip = new Chip();
+        var binary = Compiler.Assemble(asm);
         
-        chip.Load([
-            0x60, 0x02,
-            0x80, 0x16
-        ]);
-        
+        chip.Load(binary);
         chip.Run(cycles: 2);
         
         chip.Registers.V[0].ShouldBe((byte) 0x01);
@@ -420,13 +423,15 @@ public class InstructionsTests
     [Fact]
     public void Chip_RegistersShiftLeft()
     {
+        var asm = """
+                  VRG V0 1
+                  SHL V0
+                  """;
+        
         var chip = new Chip();
+        var binary = Compiler.Assemble(asm);
         
-        chip.Load([
-            0x60, 0x01,
-            0x80, 0x1E
-        ]);
-        
+        chip.Load(binary);
         chip.Run(cycles: 2);
         
         chip.Registers.V[0].ShouldBe((byte) 0x02);

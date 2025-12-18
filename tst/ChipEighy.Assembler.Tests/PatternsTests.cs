@@ -195,6 +195,16 @@ public sealed class PatternsTests
     }
     
     [Fact]
+    public void PatternSkipIfRegistersNotEqual_InputIsValid_Encodes()
+    {
+        var parsedLine = new ParsedLine(0, ["SKRNE", "V4", "VF"]);
+        var pattern = new PatternSkipIfRegistersNotEqual();
+        var opcode = pattern.Encode(parsedLine);
+        
+        opcode.ShouldBe((ushort) 0x94F0);
+    }
+    
+    [Fact]
     public void PatternShiftRightRegister_InputIsValid_Encodes()
     {
         var parsedLine = new ParsedLine(0, ["SHR", "V4", "VF"]);
@@ -202,6 +212,36 @@ public sealed class PatternsTests
         var opcode = pattern.Encode(parsedLine);
         
         opcode.ShouldBe((ushort) 0x84F6);
+    }
+    
+    [Fact]
+    public void PatternShiftRightRegister_IgnoredOperandNotUsed_InputIsValid_Encodes()
+    {
+        var parsedLine = new ParsedLine(0, ["SHR", "V4"]);
+        var pattern = new PatternShiftRightRegister();
+        var opcode = pattern.Encode(parsedLine);
+        
+        opcode.ShouldBe((ushort) 0x8406);
+    }
+    
+    [Fact]
+    public void PatternShiftLeftRegister_InputIsValid_Encodes()
+    {
+        var parsedLine = new ParsedLine(0, ["SHL", "V4", "VF"]);
+        var pattern = new PatternShiftLeftRegister();
+        var opcode = pattern.Encode(parsedLine);
+        
+        opcode.ShouldBe((ushort) 0x84FE);
+    }
+    
+    [Fact]
+    public void PatternShiftLeftRegister_IgnoredOperandNotUsed_InputIsValid_Encodes()
+    {
+        var parsedLine = new ParsedLine(0, ["SHL", "V4"]);
+        var pattern = new PatternShiftLeftRegister();
+        var opcode = pattern.Encode(parsedLine);
+        
+        opcode.ShouldBe((ushort) 0x840E);
     }
     
     [Theory]

@@ -89,6 +89,8 @@ public class Encoder
         _patterns.Add("SUB", new PatternSubtractRegisters());
         _patterns.Add("SUM", new PatternSumRegisters());
         _patterns.Add("SHR", new PatternShiftRightRegister());
+        _patterns.Add("SHL", new PatternShiftLeftRegister());
+        _patterns.Add("SKRNE", new PatternSkipIfRegistersNotEqual());
 
         return this;
     }
@@ -186,6 +188,11 @@ public abstract class InstructionPattern
 
     protected void ThrowIfNot(byte index, OperandType type, ParsedLine parsedLine)
     {
+        if (parsedLine.Operands.Length < index + 1)
+        {
+            throw new SyntaxException(parsedLine.LineNumber);
+        }
+
         if (parsedLine.Operands[index].OperandType != type)
         {
             throw new SyntaxException(parsedLine.LineNumber);
@@ -194,6 +201,11 @@ public abstract class InstructionPattern
     
     protected void ThrowIf(byte index, OperandType type, ParsedLine parsedLine)
     {
+        if (parsedLine.Operands.Length < index + 1)
+        {
+            throw new SyntaxException(parsedLine.LineNumber);
+        }
+        
         if (parsedLine.Operands[index].OperandType == type)
         {
             throw new SyntaxException(parsedLine.LineNumber);
@@ -245,7 +257,6 @@ public sealed class PatternCall : InstructionPattern
     
     protected override ushort EncodeLine(ParsedLine parsedLine)
     {
-        ThrowIfNot(count: 1, parsedLine);
         ThrowIf(index: 0, OperandType.Register, parsedLine);
 
         var address = parsedLine.Operands[0].OperandType == OperandType.Number
@@ -262,7 +273,6 @@ public sealed class PatternValueToRegister : InstructionPattern
     
     protected override ushort EncodeLine(ParsedLine parsedLine)
     {
-        ThrowIfNot(count: 2, parsedLine);
         ThrowIfNot(index: 0, OperandType.Register, parsedLine);
         ThrowIfNot(index: 1, OperandType.Number, parsedLine);
         
@@ -279,7 +289,6 @@ public sealed class PatternValueToI : InstructionPattern
     
     protected override ushort EncodeLine(ParsedLine parsedLine)
     {
-        ThrowIfNot(count: 1, parsedLine);
         ThrowIf(index: 0, OperandType.Register, parsedLine);
         
         var address = parsedLine.Operands[0].OperandType == OperandType.Number
@@ -296,7 +305,6 @@ public sealed class PatternJump : InstructionPattern
     
     protected override ushort EncodeLine(ParsedLine parsedLine)
     {
-        ThrowIfNot(count: 1, parsedLine);
         ThrowIf(index: 0, OperandType.Register, parsedLine);
 
         var address = parsedLine.Operands[0].OperandType == OperandType.Number
@@ -313,7 +321,6 @@ public sealed class PatternDrawSprite : InstructionPattern
 
     protected override ushort EncodeLine(ParsedLine parsedLine)
     {
-        ThrowIfNot(count: 3, parsedLine);
         ThrowIfNot(index: 0, OperandType.Register, parsedLine);
         ThrowIfNot(index: 1, OperandType.Register, parsedLine);
         ThrowIfNot(index: 2, OperandType.Number, parsedLine);
@@ -331,7 +338,6 @@ public sealed class PatternSkipIfEqual : InstructionPattern
 
     protected override ushort EncodeLine(ParsedLine parsedLine)
     {
-        ThrowIfNot(count: 2, parsedLine);
         ThrowIfNot(index: 0, OperandType.Register, parsedLine);
         ThrowIfNot(index: 1, OperandType.Number, parsedLine);
 
@@ -348,7 +354,6 @@ public sealed class PatternSkipIfNotEqual : InstructionPattern
 
     protected override ushort EncodeLine(ParsedLine parsedLine)
     {
-        ThrowIfNot(count: 2, parsedLine);
         ThrowIfNot(index: 0, OperandType.Register, parsedLine);
         ThrowIfNot(index: 1, OperandType.Number, parsedLine);
 
@@ -365,7 +370,6 @@ public sealed class PatternSkipIfRegistersEqual : InstructionPattern
 
     protected override ushort EncodeLine(ParsedLine parsedLine)
     {
-        ThrowIfNot(count: 2, parsedLine);
         ThrowIfNot(index: 0, OperandType.Register, parsedLine);
         ThrowIfNot(index: 1, OperandType.Register, parsedLine);
 
@@ -382,7 +386,6 @@ public sealed class PatternAddValueToRegister : InstructionPattern
 
     protected override ushort EncodeLine(ParsedLine parsedLine)
     {
-        ThrowIfNot(count: 2, parsedLine);
         ThrowIfNot(index: 0, OperandType.Register, parsedLine);
         ThrowIfNot(index: 1, OperandType.Number, parsedLine);
 
@@ -399,7 +402,6 @@ public sealed class PatternMoveRegisterValues : InstructionPattern
 
     protected override ushort EncodeLine(ParsedLine parsedLine)
     {
-        ThrowIfNot(count: 2, parsedLine);
         ThrowIfNot(index: 0, OperandType.Register, parsedLine);
         ThrowIfNot(index: 1, OperandType.Register, parsedLine);
 
@@ -416,7 +418,6 @@ public sealed class PatternBitwiseOr : InstructionPattern
 
     protected override ushort EncodeLine(ParsedLine parsedLine)
     {
-        ThrowIfNot(count: 2, parsedLine);
         ThrowIfNot(index: 0, OperandType.Register, parsedLine);
         ThrowIfNot(index: 1, OperandType.Register, parsedLine);
 
@@ -433,7 +434,6 @@ public sealed class PatternBitwiseAnd : InstructionPattern
 
     protected override ushort EncodeLine(ParsedLine parsedLine)
     {
-        ThrowIfNot(count: 2, parsedLine);
         ThrowIfNot(index: 0, OperandType.Register, parsedLine);
         ThrowIfNot(index: 1, OperandType.Register, parsedLine);
 
@@ -450,7 +450,6 @@ public sealed class PatternBitwiseXor : InstructionPattern
 
     protected override ushort EncodeLine(ParsedLine parsedLine)
     {
-        ThrowIfNot(count: 2, parsedLine);
         ThrowIfNot(index: 0, OperandType.Register, parsedLine);
         ThrowIfNot(index: 1, OperandType.Register, parsedLine);
 
@@ -467,7 +466,6 @@ public sealed class PatternSubtractRegisters : InstructionPattern
 
     protected override ushort EncodeLine(ParsedLine parsedLine)
     {
-        ThrowIfNot(count: 2, parsedLine);
         ThrowIfNot(index: 0, OperandType.Register, parsedLine);
         ThrowIfNot(index: 1, OperandType.Register, parsedLine);
 
@@ -484,7 +482,6 @@ public sealed class PatternSumRegisters : InstructionPattern
 
     protected override ushort EncodeLine(ParsedLine parsedLine)
     {
-        ThrowIfNot(count: 2, parsedLine);
         ThrowIfNot(index: 0, OperandType.Register, parsedLine);
         ThrowIfNot(index: 1, OperandType.Register, parsedLine);
 
@@ -501,14 +498,46 @@ public sealed class PatternShiftRightRegister : InstructionPattern
 
     protected override ushort EncodeLine(ParsedLine parsedLine)
     {
-        ThrowIfNot(count: 2, parsedLine);
         ThrowIfNot(index: 0, OperandType.Register, parsedLine);
-        ThrowIfNot(index: 1, OperandType.Register, parsedLine);
-
+        
         var hi = (byte) (0x80 + parsedLine.Operands[0].Register);
-        var lo = (byte) ((byte) (parsedLine.Operands[1].Register << 4) + 6);
+        var lo = parsedLine.Operands is [_, { OperandType: OperandType.Register }]
+            ? (byte) ((byte)(parsedLine.Operands[1].Register << 4) + 6)
+            : (byte) 0x06;
 
         return BitConverter.ToUInt16([lo, hi]);
     }
 }
 
+public sealed class PatternShiftLeftRegister : InstructionPattern
+{
+    public PatternShiftLeftRegister() : base("SHL", "ShiftLeftRegister") { }
+
+    protected override ushort EncodeLine(ParsedLine parsedLine)
+    {
+        ThrowIfNot(index: 0, OperandType.Register, parsedLine);
+        
+        var hi = (byte) (0x80 + parsedLine.Operands[0].Register);
+        var lo = parsedLine.Operands is [_, { OperandType: OperandType.Register }]
+            ? (byte) ((byte)(parsedLine.Operands[1].Register << 4) + 0xE)
+            : (byte) 0x0E;
+
+        return BitConverter.ToUInt16([lo, hi]);
+    }
+}
+
+public sealed class PatternSkipIfRegistersNotEqual : InstructionPattern
+{
+    public PatternSkipIfRegistersNotEqual() : base("SKRNE", "SkipIfRegistersNotEqual") { }
+
+    protected override ushort EncodeLine(ParsedLine parsedLine)
+    {
+        ThrowIfNot(index: 0, OperandType.Register, parsedLine);
+        ThrowIfNot(index: 1, OperandType.Register, parsedLine);
+
+        var hi = (byte) (0x90 + parsedLine.Operands[0].Register);
+        var lo = ((byte)(parsedLine.Operands[1].Register << 4));
+
+        return BitConverter.ToUInt16([lo, hi]);
+    }
+}
