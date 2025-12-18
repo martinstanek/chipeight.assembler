@@ -104,7 +104,7 @@ public sealed class PatternsTests
     [InlineData("00001010b")]
     public void PatternSkipIfEqual_InputIsValid_Encodes(string value)
     {
-        var parsedLine = new ParsedLine(0, ["JMP", "V2", value]);
+        var parsedLine = new ParsedLine(0, ["SKE", "V2", value]);
         var pattern = new PatternSkipIfEqual();
         var opcode = pattern.Encode(parsedLine);
         
@@ -117,7 +117,7 @@ public sealed class PatternsTests
     [InlineData("00001010b")]
     public void PatternSkipIfNotEqual_InputIsValid_Encodes(string value)
     {
-        var parsedLine = new ParsedLine(0, ["JMP", "V2", value]);
+        var parsedLine = new ParsedLine(0, ["SKNE", "V2", value]);
         var pattern = new PatternSkipIfNotEqual();
         var opcode = pattern.Encode(parsedLine);
         

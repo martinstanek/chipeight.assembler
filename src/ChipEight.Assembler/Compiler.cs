@@ -157,7 +157,23 @@ public abstract class InstructionPattern
         Keyword = keyword;
     }
 
-    public abstract ushort Encode(ParsedLine parsedLine);
+    public virtual ushort Encode(ParsedLine parsedLine)
+    {
+        ThrowIfNotMnemonic(parsedLine);
+
+        return EncodeLine(parsedLine);
+    }
+
+    protected abstract ushort EncodeLine(ParsedLine parsedLine);
+
+    protected void ThrowIfNotMnemonic(ParsedLine parsedLine)
+    {
+        if (parsedLine.LineType != LineType.Instruction 
+            || !parsedLine.Instruction.Equals(Mnemonic, StringComparison.OrdinalIgnoreCase))
+        {
+            throw new SyntaxException(parsedLine.LineNumber);
+        }
+    }
 
     protected void ThrowIfNot(byte index, OperandType type, ParsedLine parsedLine)
     {
@@ -194,7 +210,7 @@ public sealed class PatternClear : InstructionPattern
 {
     public PatternClear() : base("CLR", "Clear") { }
     
-    public override ushort Encode(ParsedLine parsedLine)
+    protected override ushort EncodeLine(ParsedLine parsedLine)
     {
         ThrowIfNot(count: 0, parsedLine);
 
@@ -206,7 +222,7 @@ public sealed class PatternReturn : InstructionPattern
 {
     public PatternReturn() : base("RTN", "Return") { }
     
-    public override ushort Encode(ParsedLine parsedLine)
+    protected override ushort EncodeLine(ParsedLine parsedLine)
     {
         ThrowIfNot(count: 0, parsedLine);
 
@@ -218,7 +234,7 @@ public sealed class PatternCall : InstructionPattern
 {
     public PatternCall(SymbolMap symbolMap) : base("CALL", "Call", symbolMap) { }
     
-    public override ushort Encode(ParsedLine parsedLine)
+    protected override ushort EncodeLine(ParsedLine parsedLine)
     {
         ThrowIfNot(count: 1, parsedLine);
         ThrowIf(index: 0, OperandType.Register, parsedLine);
@@ -235,7 +251,7 @@ public sealed class PatternValueToRegister : InstructionPattern
 {
     public PatternValueToRegister() : base("VRG", "ValueToRegister") {  }
     
-    public override ushort Encode(ParsedLine parsedLine)
+    protected override ushort EncodeLine(ParsedLine parsedLine)
     {
         ThrowIfNot(count: 2, parsedLine);
         ThrowIfNot(index: 0, OperandType.Register, parsedLine);
@@ -252,7 +268,7 @@ public sealed class PatternValueToI : InstructionPattern
 {
     public PatternValueToI(SymbolMap symbolMap) : base("VI", "ValueToI", symbolMap) { }
     
-    public override ushort Encode(ParsedLine parsedLine)
+    protected override ushort EncodeLine(ParsedLine parsedLine)
     {
         ThrowIfNot(count: 1, parsedLine);
         ThrowIf(index: 0, OperandType.Register, parsedLine);
@@ -269,7 +285,7 @@ public sealed class PatternJump : InstructionPattern
 {
     public PatternJump(SymbolMap symbolMap) : base("JMP", "Jump", symbolMap) { }
     
-    public override ushort Encode(ParsedLine parsedLine)
+    protected override ushort EncodeLine(ParsedLine parsedLine)
     {
         ThrowIfNot(count: 1, parsedLine);
         ThrowIf(index: 0, OperandType.Register, parsedLine);
@@ -286,7 +302,7 @@ public sealed class PatternDrawSprite : InstructionPattern
 {
     public PatternDrawSprite() : base("DRW", "DrawSprite") { }
 
-    public override ushort Encode(ParsedLine parsedLine)
+    protected override ushort EncodeLine(ParsedLine parsedLine)
     {
         ThrowIfNot(count: 3, parsedLine);
         ThrowIfNot(index: 0, OperandType.Register, parsedLine);
@@ -304,7 +320,7 @@ public sealed class PatternSkipIfEqual : InstructionPattern
 {
     public PatternSkipIfEqual() : base("SKE", "SkipIfEqual") { }
 
-    public override ushort Encode(ParsedLine parsedLine)
+    protected override ushort EncodeLine(ParsedLine parsedLine)
     {
         ThrowIfNot(count: 2, parsedLine);
         ThrowIfNot(index: 0, OperandType.Register, parsedLine);
@@ -321,7 +337,7 @@ public sealed class PatternSkipIfNotEqual : InstructionPattern
 {
     public PatternSkipIfNotEqual() : base("SKNE", "SkipIfNotEqual") { }
 
-    public override ushort Encode(ParsedLine parsedLine)
+    protected override ushort EncodeLine(ParsedLine parsedLine)
     {
         ThrowIfNot(count: 2, parsedLine);
         ThrowIfNot(index: 0, OperandType.Register, parsedLine);
@@ -338,7 +354,7 @@ public sealed class PatternSkipIfRegistersEqual : InstructionPattern
 {
     public PatternSkipIfRegistersEqual() : base("SKRE", "SkipIfRegistersEqual") { }
 
-    public override ushort Encode(ParsedLine parsedLine)
+    protected override ushort EncodeLine(ParsedLine parsedLine)
     {
         ThrowIfNot(count: 2, parsedLine);
         ThrowIfNot(index: 0, OperandType.Register, parsedLine);
