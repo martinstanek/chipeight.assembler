@@ -4,6 +4,7 @@
 
 
 ```asm 
+# draw a space-ship as seen in Byte Magazine '78
  main:
     VRG V2 0 
     VRG V3 0 
@@ -16,6 +17,5 @@
         01110000b 11111000b
         11011000b 10001000b
                         
-continue:
-    CLR    
+ continue: 
 ```
