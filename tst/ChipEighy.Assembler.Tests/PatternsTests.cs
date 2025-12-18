@@ -248,6 +248,16 @@ public sealed class PatternsTests
         
         opcode.ShouldBe((ushort) 0x8406);
     }
+
+    [Fact]
+    public void PatternAddRegisterToI_IgnoredOperandNotUsed_InputIsValid_Encodes()
+    {
+        var parsedLine = new ParsedLine(0, ["ADDI", "V4"]);
+        var pattern = new PatternAddRegisterToI();
+        var opcode = pattern.Encode(parsedLine);
+
+        opcode.ShouldBe((ushort) 0xF41E);
+    }
     
     [Fact]
     public void PatternShiftLeftRegister_InputIsValid_Encodes()
@@ -267,6 +277,19 @@ public sealed class PatternsTests
         var opcode = pattern.Encode(parsedLine);
         
         opcode.ShouldBe((ushort) 0x840E);
+    }
+
+    [Theory]
+    [InlineData("10")]
+    [InlineData("0xA")]
+    [InlineData("00001010b")]
+    public void PatternRandom_InputIsValid_Encodes(string value)
+    {
+        var parsedLine = new ParsedLine(0, ["RND", "V4", value]);
+        var pattern = new PatternRandom();
+        var opcode = pattern.Encode(parsedLine);
+
+        opcode.ShouldBe((ushort) 0xC40A);
     }
     
     [Theory]

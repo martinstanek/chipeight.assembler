@@ -58,12 +58,15 @@ public class InstructionsTests
     [Fact]
     public void Chip_RandomToRegister()
     {
+        var asm = """
+                  VRG V0 1
+                  RND V0 1
+                  """;
+
         var chip = new Chip();
-        
-        chip.Load([
-            0x60, 0x81,
-            0xC0, 0x01
-        ]);
+        var binary = Compiler.Assemble(asm);
+
+        chip.Load(binary);
         chip.Run(cycles: 2);
         
         chip.Registers.V[0x0].ShouldNotBe((byte) 0x81);
@@ -444,19 +447,15 @@ public class InstructionsTests
     public void Chip_AddRegisterToI()
     {
         var asm = """
-                  VRG V0 1
-                   VI 1
-                   
+                   VRG V0 1
+                    VI 1
+                  ADDI V0 
                   """;
         
         var chip = new Chip();
+        var binary = Compiler.Assemble(asm);
         
-        chip.Load([
-            0x60, 0x01,
-            0xA0, 0x01,
-            0xF0, 0x1E
-        ]);
-        
+        chip.Load(binary);
         chip.Run(cycles: 3);
         
         chip.Registers.V[0].ShouldBe((byte) 0x01);

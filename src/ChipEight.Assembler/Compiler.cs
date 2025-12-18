@@ -93,6 +93,8 @@ public class Encoder
         _patterns.Add("SKRNE", new PatternSkipIfRegistersNotEqual());
         _patterns.Add("SUBR", new PatternSubtractRegistersReverse());
         _patterns.Add("JMPR", new PatternJumpPlusRegister(symbolMap));
+        _patterns.Add("ADDI", new PatternAddRegisterToI());
+        _patterns.Add("RND", new PatternRandom());
 
         return this;
     }
@@ -576,18 +578,35 @@ public sealed class PatternJumpPlusRegister : InstructionPattern
     }
 }
 
-public sealed class PatternSkipIfEqual : InstructionPattern
+public sealed class PatternAddRegisterToI : InstructionPattern
 {
-    public PatternSkipIfEqual() : base("SKE", "SkipIfEqual") { }
+    public PatternAddRegisterToI() : base("ADDI", "AddRegisterToI") { }
+
+    protected override ushort EncodeLine(ParsedLine parsedLine)
+    {
+        ThrowIfNot(count: 1, parsedLine);
+        ThrowIfNot(index: 0, OperandType.Register, parsedLine);
+
+        var hi = (byte) (0xF0 + parsedLine.Operands[0].Register);
+        var lo = (byte) 0x1E;
+
+        return BitConverter.ToUInt16([lo, hi]);
+    }
+}
+
+public sealed class PatternRandom : InstructionPattern
+{
+    public PatternRandom() : base("RND", "Random") { }
 
     protected override ushort EncodeLine(ParsedLine parsedLine)
     {
         ThrowIfNot(index: 0, OperandType.Register, parsedLine);
         ThrowIfNot(index: 1, OperandType.Number, parsedLine);
 
-        var hi = (byte) (0x30 + parsedLine.Operands[0].Register);
+        var hi = (byte) (0xC0 + parsedLine.Operands[0].Register);
         var lo = (byte) parsedLine.Operands[1].Number;
 
         return BitConverter.ToUInt16([lo, hi]);
     }
 }
+
