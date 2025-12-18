@@ -239,9 +239,9 @@ public abstract class InstructionPattern
         }
     }
 
-    protected SymbolMap Map { get; private set; }
+    protected SymbolMap Map { get; }
     
-    public string Mnemonic { get; private set; }
+    public string Mnemonic { get; }
 
     public string Keyword { get; private set; }
 }

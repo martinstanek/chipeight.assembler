@@ -7,8 +7,6 @@ namespace ChipEighy.Assembler.Tests;
 
 public class InstructionsTests
 {
-    // TODO: do not use V0 as default
-    
     [Fact]
     public void Chip_Clear()
     {
@@ -94,14 +92,16 @@ public class InstructionsTests
     [Fact]
     public void Chip_SkipIfKey()
     {
+        var asm = """
+                   VRG V1 2
+                  SKEY V1
+                  """;
         
         var chip = new Chip();
+        var binary = Compiler.Assemble(asm);
         
         chip.Keypad.Keys[0x2] = true;
-        chip.Load([
-            0x61, 0x02,
-            0xE1, 0x9E
-        ]);
+        chip.Load(binary);
         chip.Run(cycles: 2);
         
         chip.Registers.Pc.ShouldBe((ushort) 0x206);
@@ -110,13 +110,16 @@ public class InstructionsTests
     [Fact]
     public void Chip_SkipIfNotKey()
     {
+        var asm = """
+                   VRG V1 2
+                  SNKEY V1
+                  """;
+        
         var chip = new Chip();
+        var binary = Compiler.Assemble(asm);
         
         chip.Keypad.Keys[0x2] = false;
-        chip.Load([
-            0x61, 0x02,
-            0xE1, 0xA1
-        ]);
+        chip.Load(binary);
         chip.Run(cycles: 2);
         
         chip.Registers.Pc.ShouldBe((ushort) 0x206);
@@ -465,14 +468,16 @@ public class InstructionsTests
     [Fact]
     public void Chip_BCD()
     {
+        var asm = """
+                  VRG V0 0xFE
+                   VI 0x250
+                  BCD V0
+                  """;
+        
         var chip = new Chip();
+        var binary = Compiler.Assemble(asm);
         
-        chip.Load([
-            0x60, 0xFE,
-            0xA2, 0x50,
-            0xF0, 0x33
-        ]);
-        
+        chip.Load(binary);
         chip.Run(cycles: 3);
         
         chip.Registers.V[0].ShouldBe((byte) 0xFE);
@@ -485,16 +490,18 @@ public class InstructionsTests
     [Fact]
     public void Chip_StoreRegistersToMemory()
     {
+        var asm = """
+                  VRG V0 0xFE
+                  VRG V1 0xEF
+                  VRG V2 0xFF
+                   VI 0x250
+                  SRM V3
+                  """;
+        
         var chip = new Chip();
+        var binary = Compiler.Assemble(asm);
         
-        chip.Load([
-            0x60, 0xFE,
-            0x61, 0xEF,
-            0x62, 0xFF,
-            0xA2, 0x50,
-            0xF3, 0x55
-        ]);
-        
+        chip.Load(binary);
         chip.Run(cycles: 5);
         
         chip.Registers.V[0].ShouldBe((byte) 0xFE);
@@ -509,20 +516,22 @@ public class InstructionsTests
     [Fact]
     public void Chip_LoadRegistersFromMemory()
     {
+        var asm = """
+                  VRG V0 0xFE
+                  VRG V1 0xEF
+                  VRG V2 0xFF
+                   VI 0x250
+                  SRM V3
+                  VRG V0 0
+                  VRG V1 0
+                  VRG V2 0
+                  LRM V3
+                  """;
+        
         var chip = new Chip();
+        var binary = Compiler.Assemble(asm);
         
-        chip.Load([
-            0x60, 0xFE,
-            0x61, 0xEF,
-            0x62, 0xFF,
-            0xA2, 0x50,
-            0xF3, 0x55,
-            0x60, 0x00,
-            0x61, 0x00,
-            0x62, 0x00,
-            0xF3, 0x65
-        ]);
-        
+        chip.Load(binary);
         chip.Run(cycles: 9);
         
         chip.Registers.V[0].ShouldBe((byte) 0xFE);
