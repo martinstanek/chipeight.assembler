@@ -91,6 +91,7 @@ public class InstructionsTests
     [Fact]
     public void Chip_SkipIfKey()
     {
+        
         var chip = new Chip();
         
         chip.Keypad.Keys[0x2] = true;
@@ -143,15 +144,17 @@ public class InstructionsTests
     [Fact]
     public void Chip_SkipIfEqual()
     {
+        var asm = """
+                  VRG V1 5
+                  SKE V1 5
+                  VRG V1 1
+                  VRG V1 2
+                  """;
+
         var chip = new Chip();
+        var binary = Compiler.Assemble(asm);
         
-        chip.Load([
-            0x61, 0x05,
-            0x31, 0x05,
-            0x61, 0x01,
-            0x61, 0x02
-        ]);
-        
+        chip.Load(binary);
         chip.Run(cycles: 3);
         
         chip.Registers.V[0x1].ShouldBe((byte) 0x02);
@@ -160,15 +163,17 @@ public class InstructionsTests
     [Fact]
     public void Chip_SkipIfNotEqual()
     {
+        var asm = """
+                   VRG V1 5
+                  SKNE V1 4
+                   VRG V1 1
+                   VRG V1 2
+                  """;
+        
         var chip = new Chip();
+        var binary = Compiler.Assemble(asm);
         
-        chip.Load([
-            0x61, 0x05,
-            0x41, 0x04,
-            0x61, 0x01,
-            0x61, 0x02
-        ]);
-        
+        chip.Load(binary);
         chip.Run(cycles: 3);
         
         chip.Registers.V[1].ShouldBe((byte) 0x02);

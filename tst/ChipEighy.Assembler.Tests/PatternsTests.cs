@@ -12,7 +12,7 @@ public sealed class PatternsTests
     {
         var parsedLine = new ParsedLine(0, ["CLR"]);
         var pattern = new PatternClear();
-        var opcode = pattern.Encode(0, parsedLine.Operands);
+        var opcode = pattern.Encode(parsedLine);
         
         opcode.ShouldBe((ushort) 0x00E0);
     }
@@ -22,7 +22,7 @@ public sealed class PatternsTests
     {
         var parsedLine = new ParsedLine(0, ["RTN"]);
         var pattern = new PatternReturn();
-        var opcode = pattern.Encode(0, parsedLine.Operands);
+        var opcode = pattern.Encode(parsedLine);
         
         opcode.ShouldBe((ushort) 0x00EE);
     }
@@ -35,7 +35,7 @@ public sealed class PatternsTests
     {
         var parsedLine = new ParsedLine(0, ["VRG", "VF", value]);
         var pattern = new PatternValueToRegister();
-        var opcode = pattern.Encode(0, parsedLine.Operands);
+        var opcode = pattern.Encode(parsedLine);
         
         opcode.ShouldBe((ushort) 0x6F0A);
     }
@@ -50,7 +50,7 @@ public sealed class PatternsTests
         var symbolMap = new SymbolMap(new Dictionary<string, ushort> { { "label", 0x00A } });
         var parsedLine = new ParsedLine(0, ["CALL", value]);
         var pattern = new PatternCall(symbolMap);
-        var opcode = pattern.Encode(0, parsedLine.Operands);
+        var opcode = pattern.Encode(parsedLine);
         
         opcode.ShouldBe((ushort) 0x200A);
     }
@@ -65,7 +65,7 @@ public sealed class PatternsTests
         var symbolMap = new SymbolMap(new Dictionary<string, ushort> { { "label", 0x00A } });
         var parsedLine = new ParsedLine(0, ["VI", value]);
         var pattern = new PatternValueToI(symbolMap);
-        var opcode = pattern.Encode(0, parsedLine.Operands);
+        var opcode = pattern.Encode(parsedLine);
         
         opcode.ShouldBe((ushort) 0xA00A);
     }
@@ -78,7 +78,7 @@ public sealed class PatternsTests
     {
         var parsedLine = new ParsedLine(0, ["DRW", "V1", "V2", value]);
         var pattern = new PatternDrawSprite();
-        var opcode = pattern.Encode(0, parsedLine.Operands);
+        var opcode = pattern.Encode(parsedLine);
         
         opcode.ShouldBe((ushort) 0xD12A);
     }
@@ -93,8 +93,47 @@ public sealed class PatternsTests
         var symbolMap = new SymbolMap(new Dictionary<string, ushort> { { "label", 0x00A } });
         var parsedLine = new ParsedLine(0, ["JMP", value]);
         var pattern = new PatternJump(symbolMap);
-        var opcode = pattern.Encode(0, parsedLine.Operands);
+        var opcode = pattern.Encode(parsedLine);
         
         opcode.ShouldBe((ushort) 0x100A);
+    }
+    
+    [Theory]
+    [InlineData("10")]
+    [InlineData("0xA")]
+    [InlineData("00001010b")]
+    public void PatternSkipIfEqual_InputIsValid_Encodes(string value)
+    {
+        var parsedLine = new ParsedLine(0, ["JMP", "V2", value]);
+        var pattern = new PatternSkipIfEqual();
+        var opcode = pattern.Encode(parsedLine);
+        
+        opcode.ShouldBe((ushort) 0x320A);
+    }
+    
+    [Theory]
+    [InlineData("10")]
+    [InlineData("0xA")]
+    [InlineData("00001010b")]
+    public void PatternSkipIfNotEqual_InputIsValid_Encodes(string value)
+    {
+        var parsedLine = new ParsedLine(0, ["JMP", "V2", value]);
+        var pattern = new PatternSkipIfNotEqual();
+        var opcode = pattern.Encode(parsedLine);
+        
+        opcode.ShouldBe((ushort) 0x420A);
+    }
+    
+    [Theory]
+    [InlineData("10")]
+    [InlineData("0xA")]
+    [InlineData("00001010b")]
+    public void PatternSkipIfRegistersEqual_InputIsValid_Encodes(string value)
+    {
+        var parsedLine = new ParsedLine(0, ["SKRE", "V2", value]);
+        var pattern = new PatternSkipIfRegistersEqual();
+        var opcode = pattern.Encode(parsedLine);
+        
+        opcode.ShouldBe((ushort) 0x520A);
     }
 }

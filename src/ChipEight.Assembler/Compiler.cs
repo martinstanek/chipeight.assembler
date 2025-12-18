@@ -78,6 +78,8 @@ public class Encoder
         _patterns.Add("CALL", new PatternCall(symbolMap));
         _patterns.Add("JMP", new PatternJump(symbolMap));
         _patterns.Add("VI", new PatternValueToI(symbolMap));
+        _patterns.Add("SKE", new PatternSkipIfEqual());
+        _patterns.Add("SKNE", new PatternSkipIfNotEqual());
 
         return this;
     }
@@ -113,7 +115,7 @@ public class Encoder
             throw new SyntaxException(parsedLine.LineNumber);
         }
 
-        var opcode = pattern.Encode(parsedLine.LineNumber, parsedLine.Operands);
+        var opcode = pattern.Encode(parsedLine);
         var bytes = BitConverter.GetBytes(opcode);
                 
         bytes.Reverse();
@@ -155,29 +157,29 @@ public abstract class InstructionPattern
         Keyword = keyword;
     }
 
-    public abstract ushort Encode(int lineNumber, ImmutableArray<Operand> operands);
+    public abstract ushort Encode(ParsedLine parsedLine);
 
-    protected void ThrowIfNot(byte index, int lineNumber, OperandType type, ImmutableArray<Operand> operands)
+    protected void ThrowIfNot(byte index, OperandType type, ParsedLine parsedLine)
     {
-        if (operands[index].OperandType != type)
+        if (parsedLine.Operands[index].OperandType != type)
         {
-            throw new SyntaxException(lineNumber);
+            throw new SyntaxException(parsedLine.LineNumber);
         }
     }
     
-    protected void ThrowIf(byte index, int lineNumber, OperandType type, ImmutableArray<Operand> operands)
+    protected void ThrowIf(byte index, OperandType type, ParsedLine parsedLine)
     {
-        if (operands[index].OperandType == type)
+        if (parsedLine.Operands[index].OperandType == type)
         {
-            throw new SyntaxException(lineNumber);
+            throw new SyntaxException(parsedLine.LineNumber);
         }
     }
     
-    protected void ThrowIfNot(byte count, int lineNumber, ImmutableArray<Operand> operands)
+    protected void ThrowIfNot(byte count, ParsedLine parsedLine)
     {
-        if (operands.Length != count)
+        if (parsedLine.Operands.Length != count)
         {
-            throw new SyntaxException(lineNumber);
+            throw new SyntaxException(parsedLine.LineNumber);
         }
     }
 
@@ -192,9 +194,9 @@ public sealed class PatternClear : InstructionPattern
 {
     public PatternClear() : base("CLR", "Clear") { }
     
-    public override ushort Encode(int lineNumber, ImmutableArray<Operand> operands)
+    public override ushort Encode(ParsedLine parsedLine)
     {
-        ThrowIfNot(count: 0, lineNumber, operands);
+        ThrowIfNot(count: 0, parsedLine);
 
         return 0x00E0;
     }
@@ -204,9 +206,9 @@ public sealed class PatternReturn : InstructionPattern
 {
     public PatternReturn() : base("RTN", "Return") { }
     
-    public override ushort Encode(int lineNumber, ImmutableArray<Operand> operands)
+    public override ushort Encode(ParsedLine parsedLine)
     {
-        ThrowIfNot(count: 0, lineNumber, operands);
+        ThrowIfNot(count: 0, parsedLine);
 
         return 0x00EE;
     }
@@ -216,14 +218,14 @@ public sealed class PatternCall : InstructionPattern
 {
     public PatternCall(SymbolMap symbolMap) : base("CALL", "Call", symbolMap) { }
     
-    public override ushort Encode(int lineNumber, ImmutableArray<Operand> operands)
+    public override ushort Encode(ParsedLine parsedLine)
     {
-        ThrowIfNot(count: 1, lineNumber, operands);
-        ThrowIf(index: 0, lineNumber, OperandType.Register, operands);
+        ThrowIfNot(count: 1, parsedLine);
+        ThrowIf(index: 0, OperandType.Register, parsedLine);
 
-        var address = operands[0].OperandType == OperandType.Number
-            ? operands[0].Number
-            : Map.GetLabelAddress(lineNumber, operands[0].Label);
+        var address = parsedLine.Operands[0].OperandType == OperandType.Number
+            ? parsedLine.Operands[0].Number
+            : Map.GetLabelAddress(parsedLine.LineNumber, parsedLine.Operands[0].Label);
 
         return (ushort)(0x2000 + address);
     }
@@ -233,14 +235,14 @@ public sealed class PatternValueToRegister : InstructionPattern
 {
     public PatternValueToRegister() : base("VRG", "ValueToRegister") {  }
     
-    public override ushort Encode(int lineNumber, ImmutableArray<Operand> operands)
+    public override ushort Encode(ParsedLine parsedLine)
     {
-        ThrowIfNot(count: 2, lineNumber, operands);
-        ThrowIfNot(index: 0, lineNumber, OperandType.Register, operands);
-        ThrowIfNot(index: 1, lineNumber, OperandType.Number, operands);
+        ThrowIfNot(count: 2, parsedLine);
+        ThrowIfNot(index: 0, OperandType.Register, parsedLine);
+        ThrowIfNot(index: 1, OperandType.Number, parsedLine);
         
-        var hi = (byte) (0x60 + operands[0].Register);
-        var lo = (byte) operands[1].Number;
+        var hi = (byte) (0x60 + parsedLine.Operands[0].Register);
+        var lo = (byte) parsedLine.Operands[1].Number;
         
         return  BitConverter.ToUInt16([lo, hi]);
     }
@@ -250,14 +252,14 @@ public sealed class PatternValueToI : InstructionPattern
 {
     public PatternValueToI(SymbolMap symbolMap) : base("VI", "ValueToI", symbolMap) { }
     
-    public override ushort Encode(int lineNumber, ImmutableArray<Operand> operands)
+    public override ushort Encode(ParsedLine parsedLine)
     {
-        ThrowIfNot(count: 1, lineNumber, operands);
-        ThrowIf(index: 0, lineNumber, OperandType.Register, operands);
+        ThrowIfNot(count: 1, parsedLine);
+        ThrowIf(index: 0, OperandType.Register, parsedLine);
         
-        var address = operands[0].OperandType == OperandType.Number
-            ? operands[0].Number
-            : Map.GetLabelAddress(lineNumber, operands[0].Label);
+        var address = parsedLine.Operands[0].OperandType == OperandType.Number
+            ? parsedLine.Operands[0].Number
+            : Map.GetLabelAddress(parsedLine.LineNumber, parsedLine.Operands[0].Label);
 
         return (ushort) (0xA000 + address);
     }
@@ -267,14 +269,14 @@ public sealed class PatternJump : InstructionPattern
 {
     public PatternJump(SymbolMap symbolMap) : base("JMP", "Jump", symbolMap) { }
     
-    public override ushort Encode(int lineNumber, ImmutableArray<Operand> operands)
+    public override ushort Encode(ParsedLine parsedLine)
     {
-        ThrowIfNot(count: 1, lineNumber, operands);
-        ThrowIf(index: 0, lineNumber, OperandType.Register, operands);
+        ThrowIfNot(count: 1, parsedLine);
+        ThrowIf(index: 0, OperandType.Register, parsedLine);
 
-        var address = operands[0].OperandType == OperandType.Number
-            ? operands[0].Number
-            : Map.GetLabelAddress(lineNumber, operands[0].Label);
+        var address = parsedLine.Operands[0].OperandType == OperandType.Number
+            ? parsedLine.Operands[0].Number
+            : Map.GetLabelAddress(parsedLine.LineNumber, parsedLine.Operands[0].Label);
 
         return (ushort) (0x1000 + address);
     }
@@ -284,15 +286,66 @@ public sealed class PatternDrawSprite : InstructionPattern
 {
     public PatternDrawSprite() : base("DRW", "DrawSprite") { }
 
-    public override ushort Encode(int lineNumber, ImmutableArray<Operand> operands)
+    public override ushort Encode(ParsedLine parsedLine)
     {
-        ThrowIfNot(count: 3, lineNumber, operands);
-        ThrowIfNot(index: 0, lineNumber, OperandType.Register, operands);
-        ThrowIfNot(index: 1, lineNumber, OperandType.Register, operands);
-        ThrowIfNot(index: 2, lineNumber, OperandType.Number, operands);
+        ThrowIfNot(count: 3, parsedLine);
+        ThrowIfNot(index: 0, OperandType.Register, parsedLine);
+        ThrowIfNot(index: 1, OperandType.Register, parsedLine);
+        ThrowIfNot(index: 2, OperandType.Number, parsedLine);
 
-        var hi = (byte) (0xD0 + operands[0].Register);
-        var lo = (byte) ((operands[1].Register << 4) + (byte) operands[2].Number);
+        var hi = (byte) (0xD0 + parsedLine.Operands[0].Register);
+        var lo = (byte) ((parsedLine.Operands[1].Register << 4) + (byte) parsedLine.Operands[2].Number);
+
+        return BitConverter.ToUInt16([lo, hi]);
+    }
+}
+
+public sealed class PatternSkipIfEqual : InstructionPattern
+{
+    public PatternSkipIfEqual() : base("SKE", "SkipIfEqual") { }
+
+    public override ushort Encode(ParsedLine parsedLine)
+    {
+        ThrowIfNot(count: 2, parsedLine);
+        ThrowIfNot(index: 0, OperandType.Register, parsedLine);
+        ThrowIfNot(index: 1, OperandType.Number, parsedLine);
+
+        var hi = (byte) (0x30 + parsedLine.Operands[0].Register);
+        var lo = (byte) parsedLine.Operands[1].Number;
+
+        return BitConverter.ToUInt16([lo, hi]);
+    }
+}
+
+public sealed class PatternSkipIfNotEqual : InstructionPattern
+{
+    public PatternSkipIfNotEqual() : base("SKNE", "SkipIfNotEqual") { }
+
+    public override ushort Encode(ParsedLine parsedLine)
+    {
+        ThrowIfNot(count: 2, parsedLine);
+        ThrowIfNot(index: 0, OperandType.Register, parsedLine);
+        ThrowIfNot(index: 1, OperandType.Number, parsedLine);
+
+        var hi = (byte) (0x40 + parsedLine.Operands[0].Register);
+        var lo = (byte) parsedLine.Operands[1].Number;
+
+        return BitConverter.ToUInt16([lo, hi]);
+    }
+}
+
+public sealed class PatternSkipIfRegistersEqual : InstructionPattern
+{
+    public PatternSkipIfRegistersEqual() : base("SKRE", "SkipIfRegistersEqual") { }
+
+    public override ushort Encode(ParsedLine parsedLine)
+    {
+        ThrowIfNot(count: 2, parsedLine);
+        ThrowIfNot(index: 0, OperandType.Register, parsedLine);
+        ThrowIfNot(index: 1, OperandType.Number, parsedLine);
+
+        var hi = (byte) (0x50 + parsedLine.Operands[0].Register);
+        var lo = (byte) parsedLine.Operands[1].Number;
 
         return BitConverter.ToUInt16([lo, hi]);
     }
