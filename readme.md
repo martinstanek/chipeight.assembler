@@ -3,8 +3,8 @@
 *... I'm not good in machine code, so let's try write an assembler .. work in progress*
 
 
+Let's draw a space-ship as seen in Byte Magazine '78:
 ```asm 
- // draw a space-ship as seen in Byte Magazine '78
  main:
     VRG V2 0 
     VRG V3 0 
@@ -19,3 +19,5 @@
                         
  continue: 
 ```
+
+![magazine](https://github.com/martinstanek/chipeight.assembler/blob/develop/misc/magazine.png?raw=true)
