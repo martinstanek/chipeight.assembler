@@ -515,7 +515,40 @@ public class InstructionsTests
         var binary = Compiler.Assemble(asm);
         
         chip.Load(binary);
-        chip.Run(cycles: 8);
+        chip.Run(cycles: 6);
+        chip.Memory.Raw[0x20A].ShouldBe((byte) 0x20);
+        chip.Memory.Raw[0x20A + 1].ShouldBe((byte) 0x70);
+        chip.Memory.Raw[0x20A + 2].ShouldBe((byte) 0x70);
+        chip.Memory.Raw[0x20A + 3].ShouldBe((byte) 0xF8);
+        chip.Memory.Raw[0x20A + 4].ShouldBe((byte) 0xD8);
+        chip.Memory.Raw[0x20A + 5].ShouldBe((byte) 0x88);
+    }
+    
+    [Fact]
+    public void Chip_DrawSprite_WithLabels()
+    {
+        var asm = """
+                  main:
+                    VRG V2 0 
+                    VRG V3 0 
+                     VI data 
+                    DRW V2 V3 6
+                    JMP continue
+                   
+                  data: 
+                        00100000b 01110000b
+                        01110000b 11111000b
+                        11011000b 10001000b
+                        
+                  continue:
+                    CLR    
+                  """;
+        
+        var chip = new Chip().WithRemoteDisplay("http://127.0.0.1:8090");
+        var binary = Compiler.Assemble(asm);
+        
+        chip.Load(binary);
+        chip.Run(cycles: 6);
         chip.Memory.Raw[0x20A].ShouldBe((byte) 0x20);
         chip.Memory.Raw[0x20A + 1].ShouldBe((byte) 0x70);
         chip.Memory.Raw[0x20A + 2].ShouldBe((byte) 0x70);

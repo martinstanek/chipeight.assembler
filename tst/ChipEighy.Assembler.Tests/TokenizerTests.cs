@@ -33,6 +33,7 @@ public class TokenizerTests
     {
         var asm = """
                   # example of an assembly
+                  
                   label:
                     CLR
                     JMP 544

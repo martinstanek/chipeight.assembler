@@ -13,6 +13,11 @@ public static class Tokenizer
 
         foreach (var line in asm.Split(Environment.NewLine))
         {
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                continue;
+            }
+
             if (line.TrimStart().StartsWith(Language.Comment))
             {
                 continue;

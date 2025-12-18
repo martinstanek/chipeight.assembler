@@ -22,6 +22,8 @@ public sealed class Compiler
 
 public class SymbolMap
 {
+    private const ushort StartAddress = 0x200;
+    
     private readonly IReadOnlyDictionary<string, ushort> _table;
 
     public SymbolMap(IReadOnlyDictionary<string, ushort> table)
@@ -31,7 +33,21 @@ public class SymbolMap
     
     public static SymbolMap FromParsedLines(ImmutableArray<ParsedLine> lines)
     {
-        return new SymbolMap(ImmutableDictionary<string, ushort>.Empty);
+        var map = new Dictionary<string, ushort>();
+        var address = StartAddress;
+
+        foreach (var parsedLine in lines)
+        {
+            if (parsedLine.LineType == LineType.Label)
+            {
+                map[parsedLine.Label] = address;
+                continue;
+            }
+
+            address += 2;
+        }
+        
+        return new SymbolMap(map);
     }
 
     public static SymbolMap Empty => new(ImmutableDictionary<string, ushort>.Empty);
