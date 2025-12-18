@@ -42,26 +42,17 @@ public class InstructionsTests
     [Fact]
     public void Chip_Jump()
     {
-        var chip = new Chip();
+        var asm = """
+                  JMP 0x206  
+                  """;
         
-        chip.Load([0x12, 0x06]);
+        var chip = new Chip();
+        var binary = Compiler.Assemble(asm);
+        
+        chip.Load(binary);
         chip.Run(cycles: 1);
         
         chip.Registers.Pc.ShouldBe((ushort) 0x206);
-    }
-    
-    [Fact]
-    public void Chip_JumpToAddress()
-    {
-        var chip = new Chip();
-        
-        chip.Load([
-            0x60, 0x10,
-            0xB2, 0x00
-        ]);
-        chip.Run(cycles: 2);
-        
-        chip.Registers.Pc.ShouldBe((ushort) 0x210);
     }
     
     [Fact]

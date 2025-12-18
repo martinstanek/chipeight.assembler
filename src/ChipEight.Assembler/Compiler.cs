@@ -22,29 +22,47 @@ public sealed class Compiler
 
 public class SymbolMap
 {
+    private readonly IReadOnlyDictionary<string, ushort> _table;
+
+    public SymbolMap(IReadOnlyDictionary<string, ushort> table)
+    {
+        _table = table;
+    }
+    
     public static SymbolMap FromParsedLines(ImmutableArray<ParsedLine> lines)
     {
-        return new SymbolMap();
+        return new SymbolMap(ImmutableDictionary<string, ushort>.Empty);
+    }
+
+    public static SymbolMap Empty => new(ImmutableDictionary<string, ushort>.Empty);
+
+    public ushort GetLabelAddress(int lineNumber, string label)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(label);
+
+        if (!_table.TryGetValue(label, out var address))
+        {
+            throw new SyntaxException(lineNumber);
+        }
+
+        return address;
     }
 }
 
 public class Encoder
 {
     private readonly Dictionary<string, InstructionPattern> _patterns = new();
-    private SymbolMap _symbolMap = new();
-
+    
     public Encoder Build(SymbolMap symbolMap)
     {
-        _symbolMap = symbolMap;
-        
         _patterns.Add("CLR", new PatternClear());
         _patterns.Add("RTN", new PatternReturn());
-        _patterns.Add("VRG", new PatternValueToRegister());
-        _patterns.Add("CALL", new PatternCall());
-        _patterns.Add("VI", new PatternValueToI());
         _patterns.Add("DRW", new PatternDrawSprite());
-        _patterns.Add("JMP", new PatternJump());
-        
+        _patterns.Add("VRG", new PatternValueToRegister());
+        _patterns.Add("CALL", new PatternCall(symbolMap));
+        _patterns.Add("JMP", new PatternJump(symbolMap));
+        _patterns.Add("VI", new PatternValueToI(symbolMap));
+
         return this;
     }
     
@@ -109,11 +127,14 @@ public class Encoder
 
 public abstract class InstructionPattern
 {
-    protected InstructionPattern(string mnemonic, string keyword)
+    protected InstructionPattern(string mnemonic, string keyword) : this(mnemonic, keyword, SymbolMap.Empty) { }
+
+    protected InstructionPattern(string mnemonic, string keyword, SymbolMap symbolMap)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(mnemonic);
         ArgumentException.ThrowIfNullOrWhiteSpace(keyword);
-        
+
+        Map = symbolMap;
         Mnemonic = mnemonic;
         Keyword = keyword;
     }
@@ -144,6 +165,8 @@ public abstract class InstructionPattern
         }
     }
 
+    protected SymbolMap Map { get; private set; }
+    
     public string Mnemonic { get; private set; }
 
     public string Keyword { get; private set; }
@@ -175,21 +198,18 @@ public sealed class PatternReturn : InstructionPattern
 
 public sealed class PatternCall : InstructionPattern
 {
-    public PatternCall() : base("CALL", "Call") { }
+    public PatternCall(SymbolMap symbolMap) : base("CALL", "Call", symbolMap) { }
     
     public override ushort Encode(int lineNumber, ImmutableArray<Operand> operands)
     {
         ThrowIfNot(count: 1, lineNumber, operands);
         ThrowIf(index: 0, lineNumber, OperandType.Register, operands);
 
-        if (operands[0].OperandType == OperandType.Number)
-        {
-            return (ushort) (0x2000 + operands[0].Number);
-        }
+        var address = operands[0].OperandType == OperandType.Number
+            ? operands[0].Number
+            : Map.GetLabelAddress(lineNumber, operands[0].Label);
 
-        // TODO: operand is label, i suppose we need to search in the symbol map
-        
-        throw new NotSupportedException();
+        return (ushort)(0x2000 + address);
     }
 }
 
@@ -212,34 +232,41 @@ public sealed class PatternValueToRegister : InstructionPattern
 
 public sealed class PatternValueToI : InstructionPattern
 {
-    public PatternValueToI() : base("VI", "ValueToI") { }
+    public PatternValueToI(SymbolMap symbolMap) : base("VI", "ValueToI", symbolMap) { }
     
     public override ushort Encode(int lineNumber, ImmutableArray<Operand> operands)
     {
         ThrowIfNot(count: 1, lineNumber, operands);
-        ThrowIfNot(index: 0, lineNumber, OperandType.Number, operands);
+        ThrowIf(index: 0, lineNumber, OperandType.Register, operands);
+        
+        var address = operands[0].OperandType == OperandType.Number
+            ? operands[0].Number
+            : Map.GetLabelAddress(lineNumber, operands[0].Label);
 
-        return (ushort) (0xA000 + operands[0].Number);
+        return (ushort) (0xA000 + address);
     }
 }
 
 public sealed class PatternJump : InstructionPattern
 {
-    public PatternJump() : base("JMP", "Jump") { }
+    public PatternJump(SymbolMap symbolMap) : base("JMP", "Jump", symbolMap) { }
     
     public override ushort Encode(int lineNumber, ImmutableArray<Operand> operands)
     {
         ThrowIfNot(count: 1, lineNumber, operands);
-        ThrowIfNot(index: 0, lineNumber, OperandType.Number, operands);
+        ThrowIf(index: 0, lineNumber, OperandType.Register, operands);
 
-        return (ushort) (0x1000 + operands[0].Number);
+        var address = operands[0].OperandType == OperandType.Number
+            ? operands[0].Number
+            : Map.GetLabelAddress(lineNumber, operands[0].Label);
+
+        return (ushort) (0x1000 + address);
     }
 }
 
 public sealed class PatternDrawSprite : InstructionPattern
 {
     public PatternDrawSprite() : base("DRW", "DrawSprite") { }
-
 
     public override ushort Encode(int lineNumber, ImmutableArray<Operand> operands)
     {

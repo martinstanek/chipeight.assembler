@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using ChipEight.Assembler;
 using Shouldly;
 using Xunit;
@@ -43,10 +44,12 @@ public sealed class PatternsTests
     [InlineData("10")]
     [InlineData("0xA")]
     [InlineData("00001010b")]
+    [InlineData("label")]
     public void PatternCall_InputIsValid_Encodes(string value)
     {
+        var symbolMap = new SymbolMap(new Dictionary<string, ushort> { { "label", 0x00A } });
         var parsedLine = new ParsedLine(0, ["CALL", value]);
-        var pattern = new PatternCall();
+        var pattern = new PatternCall(symbolMap);
         var opcode = pattern.Encode(0, parsedLine.Operands);
         
         opcode.ShouldBe((ushort) 0x200A);
@@ -56,10 +59,12 @@ public sealed class PatternsTests
     [InlineData("10")]
     [InlineData("0xA")]
     [InlineData("00001010b")]
+    [InlineData("label")]
     public void PatternValueToI_InputIsValid_Encodes(string value)
     {
+        var symbolMap = new SymbolMap(new Dictionary<string, ushort> { { "label", 0x00A } });
         var parsedLine = new ParsedLine(0, ["VI", value]);
-        var pattern = new PatternValueToI();
+        var pattern = new PatternValueToI(symbolMap);
         var opcode = pattern.Encode(0, parsedLine.Operands);
         
         opcode.ShouldBe((ushort) 0xA00A);
@@ -82,10 +87,12 @@ public sealed class PatternsTests
     [InlineData("10")]
     [InlineData("0xA")]
     [InlineData("00001010b")]
+    [InlineData("label")]
     public void PatternJump_InputIsValid_Encodes(string value)
     {
+        var symbolMap = new SymbolMap(new Dictionary<string, ushort> { { "label", 0x00A } });
         var parsedLine = new ParsedLine(0, ["JMP", value]);
-        var pattern = new PatternJump();
+        var pattern = new PatternJump(symbolMap);
         var opcode = pattern.Encode(0, parsedLine.Operands);
         
         opcode.ShouldBe((ushort) 0x100A);
