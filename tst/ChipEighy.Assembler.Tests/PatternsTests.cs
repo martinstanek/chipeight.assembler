@@ -184,6 +184,26 @@ public sealed class PatternsTests
         opcode.ShouldBe((ushort) 0x84F5);
     }
     
+    [Fact]
+    public void PatternSumRegisters_InputIsValid_Encodes()
+    {
+        var parsedLine = new ParsedLine(0, ["SUM", "V4", "VF"]);
+        var pattern = new PatternSumRegisters();
+        var opcode = pattern.Encode(parsedLine);
+        
+        opcode.ShouldBe((ushort) 0x84F4);
+    }
+    
+    [Fact]
+    public void PatternShiftRightRegister_InputIsValid_Encodes()
+    {
+        var parsedLine = new ParsedLine(0, ["SHR", "V4", "VF"]);
+        var pattern = new PatternShiftRightRegister();
+        var opcode = pattern.Encode(parsedLine);
+        
+        opcode.ShouldBe((ushort) 0x84F6);
+    }
+    
     [Theory]
     [InlineData("10")]
     [InlineData("0xA")]

@@ -13,7 +13,7 @@
 | OR       | BitwiseOr                | 0x8xy1 | x- V[x] register, y - V[y] register | 0x8341         | OR V3 V4                                 | Set OR value of the V[3] and V[4] into the V[3], V[3] \|= V[4]         |
 | AND      | BitwiseAnd               | 0x8xy2 | x- V[x] register, y - V[y] register | 0x8562         | AND V5 V6                                | Set AND value of the V[5] and V[6] into the V[5], V[5] &= V[6]         |
 | XOR      | BitwiseXor               | 0x8xy3 | x- V[x] register, y - V[y] register | 0x8563         | XOR V5 V6                                | Set XOR value of the V[5] and V[6] into the V[5], V[5] ^= V[6]         |
-| ADD      | AddRegisters             | 0x8xy4 | x- V[x] register, y - V[y] register | 0x8344         | ADD V3 V4                                | Set sum of the V[3] and V[4] into the V[3], V[3] += V[4]               |
+| SUM      | SumRegisters             | 0x8xy4 | x- V[x] register, y - V[y] register | 0x8344         | SUM V3 V4                                | Set sum of the V[3] and V[4] into the V[3], V[3] += V[4]               |
 | SUB      | SubtractRegisters        | 0x8xy5 | x- V[x] register, y - V[y] register | 0x8345         | SUB V3 V4                                | Set subtraction of the V[3] and V[4] into the V[3], V[3] -= V[4]       |
 | SHR      | ShiftRightRegister       | 0x8xy6 | x- V[x] register, y - V[y] register | 0x8346         | SHR V3                                   | Shift right V[3], V[3] := V[3] >> 1 (The V[4] is ignored)              |
 | SUBR     | SubtractRegistersReverse | 0x8xy7 | x- V[x] register, y - V[y] register | 0x8347         | SUBR V3 V4                               | Set subtraction of the V[4] and V[3] into the V[3], V[3] = V[4] - V[3] |

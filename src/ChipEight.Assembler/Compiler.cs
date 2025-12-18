@@ -87,6 +87,8 @@ public class Encoder
         _patterns.Add("AND", new PatternBitwiseAnd());
         _patterns.Add("XOR", new PatternBitwiseXor());
         _patterns.Add("SUB", new PatternSubtractRegisters());
+        _patterns.Add("SUM", new PatternSumRegisters());
+        _patterns.Add("SHR", new PatternShiftRightRegister());
 
         return this;
     }
@@ -476,4 +478,37 @@ public sealed class PatternSubtractRegisters : InstructionPattern
     }
 }
 
+public sealed class PatternSumRegisters : InstructionPattern
+{
+    public PatternSumRegisters() : base("SUM", "SumRegisters") { }
+
+    protected override ushort EncodeLine(ParsedLine parsedLine)
+    {
+        ThrowIfNot(count: 2, parsedLine);
+        ThrowIfNot(index: 0, OperandType.Register, parsedLine);
+        ThrowIfNot(index: 1, OperandType.Register, parsedLine);
+
+        var hi = (byte) (0x80 + parsedLine.Operands[0].Register);
+        var lo = (byte) ((byte) (parsedLine.Operands[1].Register << 4) + 4);
+
+        return BitConverter.ToUInt16([lo, hi]);
+    }
+}
+
+public sealed class PatternShiftRightRegister : InstructionPattern
+{
+    public PatternShiftRightRegister() : base("SHR", "ShiftRightRegister") { }
+
+    protected override ushort EncodeLine(ParsedLine parsedLine)
+    {
+        ThrowIfNot(count: 2, parsedLine);
+        ThrowIfNot(index: 0, OperandType.Register, parsedLine);
+        ThrowIfNot(index: 1, OperandType.Register, parsedLine);
+
+        var hi = (byte) (0x80 + parsedLine.Operands[0].Register);
+        var lo = (byte) ((byte) (parsedLine.Operands[1].Register << 4) + 6);
+
+        return BitConverter.ToUInt16([lo, hi]);
+    }
+}
 
