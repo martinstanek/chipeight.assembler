@@ -2,7 +2,6 @@
 
 *... I'm not good in machine code, so let's try write an assembler .. work in progress*
 
-
 Let's draw a space-ship as seen in Byte Magazine '78:
 ```asm 
  main:
@@ -10,14 +9,20 @@ Let's draw a space-ship as seen in Byte Magazine '78:
     VRG V3 0 
      VI data 
     DRW V2 V3 6
-    JMP continue
+    JMP end
                    
  data: 
-        00100000b 01110000b
-        01110000b 11111000b
-        11011000b 10001000b
+    00100000b 01110000b
+    01110000b 11111000b
+    11011000b 10001000b
                         
- continue: 
+ end:
+    JMP end 
 ```
 
 ![magazine](https://github.com/martinstanek/chipeight.assembler/blob/develop/misc/magazine.png?raw=true)
+
+
+Toolchain (vscode extension)
+![toolchain](https://github.com/martinstanek/chipeight.assembler/blob/develop/misc/vsc.png?raw=true)
+

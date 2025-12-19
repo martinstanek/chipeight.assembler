@@ -10,6 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{CA399CE3-F
 	ProjectSection(SolutionItems) = preProject
 		misc\assembler.md = misc\assembler.md
 		readme.md = readme.md
+		misc\xmass.asm = misc\xmass.asm
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChipEighy.Assembler.Tests", "tst\ChipEighy.Assembler.Tests\ChipEighy.Assembler.Tests.csproj", "{30826289-ACC5-4D27-994E-BF1CACEC8B51}"
