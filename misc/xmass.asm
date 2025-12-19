@@ -67,40 +67,39 @@ drawchar:
 
 song:
     VRG V2 60
-    CALL play
+   CALL play
     VRG V2 15
-    CALL pause
+   CALL pause
 
     VRG V2 30
-    CALL play
+   CALL play
     VRG V2 15
-    CALL pause
+   CALL pause
 
     VRG V2 90
-    CALL play
+   CALL play
     VRG V2 30
-    CALL pause
+   CALL pause
 
     VRG V2 30
-    CALL play
+   CALL play
     VRG V2 15
-    CALL pause
+   CALL pause
 
     VRG V2 60
-    CALL play
+   CALL play
     VRG V2 15
-    CALL pause
+   CALL pause
 
     VRG V2 30
-    CALL play
+   CALL play
     VRG V2 15
-    CALL pause
+   CALL pause
 
     VRG V2 90
-    CALL play
+   CALL play
     VRG V2 30
-    CALL pause
-    
+   CALL pause
     RTN
 
 play:
@@ -121,7 +120,7 @@ waitpause:
     RTN      
 
 end:
-  JMP end
+    JMP end
 
 ychar:
   10001000b 10001000b
