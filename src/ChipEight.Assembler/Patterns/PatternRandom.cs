@@ -8,7 +8,7 @@ public sealed class PatternRandom : InstructionPattern
 
     public override bool CanDecode(ushort opcode, out string line)
     {
-        throw new NotImplementedException();
+        return CanDecodeOneRegisterAndValue(opcode, out line);
     }
 
     protected override ushort EncodeLine(ParsedLine parsedLine)

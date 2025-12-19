@@ -8,7 +8,7 @@ public sealed class PatternShiftRightRegister : InstructionPattern
 
     public override bool CanDecode(ushort opcode, out string line)
     {
-        throw new NotImplementedException();
+        return CanDecodeOneRegister(opcode, end: 0x6, out line, halfByteEnd: true);
     }
 
     protected override ushort EncodeLine(ParsedLine parsedLine)

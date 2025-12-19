@@ -6,7 +6,7 @@ public sealed class PatternClear : InstructionPattern
 
     public override bool CanDecode(ushort opcode, out string line)
     {
-        throw new System.NotImplementedException();
+        return CanDecodeEnding(opcode, end: 0xE0, out line);
     }
 
     protected override ushort EncodeLine(ParsedLine parsedLine)

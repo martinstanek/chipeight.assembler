@@ -8,18 +8,7 @@ public sealed class PatternAddRegisterToI : InstructionPattern
 
     public override bool CanDecode(ushort opcode, out string line)
     {
-        line = string.Empty;
-        var reg = (byte) ((opcode & 0x0F00) >> 8);
-        var ending = (byte) opcode & 0x00FF;
-
-        if (ending != 0x1E || reg > 0xF)
-        {
-            return false;
-        }
-
-        line = $"{Mnemonic} V{reg}";
-
-        return true;
+        return CanDecodeOneRegister(opcode, end: 0x1E, out line);
     }
 
     protected override ushort EncodeLine(ParsedLine parsedLine)

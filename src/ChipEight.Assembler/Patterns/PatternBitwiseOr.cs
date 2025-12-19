@@ -8,7 +8,7 @@ public sealed class PatternBitwiseOr : InstructionPattern
 
     public override bool CanDecode(ushort opcode, out string line)
     {
-        throw new NotImplementedException();
+        return CanDecodeTwoRegisters(opcode, end: 1, out line);
     }
 
     protected override ushort EncodeLine(ParsedLine parsedLine)

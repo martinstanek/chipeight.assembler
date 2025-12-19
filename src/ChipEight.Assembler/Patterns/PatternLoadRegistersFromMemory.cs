@@ -8,7 +8,7 @@ public sealed class PatternLoadRegistersFromMemory: InstructionPattern
 
     public override bool CanDecode(ushort opcode, out string line)
     {
-        throw new NotImplementedException();
+        return CanDecodeOneRegister(opcode, end: 0x65, out line);
     }
 
     protected override ushort EncodeLine(ParsedLine parsedLine)

@@ -8,7 +8,7 @@ public sealed class PatternMoveRegisterValues : InstructionPattern
 
     public override bool CanDecode(ushort opcode, out string line)
     {
-        throw new NotImplementedException();
+        return CanDecodeTwoRegisters(opcode, end: 0x0, out line);
     }
 
     protected override ushort EncodeLine(ParsedLine parsedLine)
