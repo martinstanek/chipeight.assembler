@@ -24,9 +24,11 @@ public abstract class InstructionPattern
         return EncodeLine(parsedLine);
     }
 
+    public abstract bool CanDecode(ushort opcode, out string line);
+    
     protected abstract ushort EncodeLine(ParsedLine parsedLine);
 
-    protected void ThrowIfNot(byte index, OperandType type, ParsedLine parsedLine)
+    protected static void ThrowIfNot(byte index, OperandType type, ParsedLine parsedLine)
     {
         if (parsedLine.Operands.Length < index + 1)
         {
@@ -44,7 +46,7 @@ public abstract class InstructionPattern
         }
     }
     
-    protected void ThrowIf(byte index, OperandType type, ParsedLine parsedLine)
+    protected static void ThrowIf(byte index, OperandType type, ParsedLine parsedLine)
     {
         if (parsedLine.Operands.Length < index + 1)
         {
@@ -57,7 +59,7 @@ public abstract class InstructionPattern
         }
     }
     
-    protected void ThrowIfNot(byte count, ParsedLine parsedLine)
+    protected static void ThrowIfNot(byte count, ParsedLine parsedLine)
     {
         if (parsedLine.Operands.Length != count)
         {
@@ -74,9 +76,11 @@ public abstract class InstructionPattern
         }
     }
     
-    protected SymbolMap Map { get; }
-    
     public string Mnemonic { get; }
 
     public string Keyword { get; private set; }
+    
+    public byte Group { get; }
+    
+    protected SymbolMap Map { get; }
 }
