@@ -2,6 +2,15 @@
 
 *... I'm not good in machine code, so let's try write an assembler .. work in progress*
 
+The complete [mnemonics](https://github.com/martinstanek/chipeight.assembler/blob/develop/misc/assembler.md)
+
+### Usage
+
+```shell
+% ./chipeightasm ./xmass.ch8asm                      
+Compiled: 11.0147ms
+```
+
 Let's draw a space-ship as seen in Byte Magazine '78:
 ```asm 
  main:
