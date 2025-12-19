@@ -72,9 +72,7 @@ public sealed class ParsedLine
 
         Operands = operands.ToImmutableArray();
     }
-
     
-
     public int LineNumber { get; private set; }
 
     public string Instruction { get; private set; }
