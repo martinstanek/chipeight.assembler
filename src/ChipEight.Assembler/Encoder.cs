@@ -9,44 +9,43 @@ public class Encoder
 {
     private readonly Dictionary<string, InstructionPattern> _patterns = new();
     
-    public Encoder Build(SymbolMap symbolMap)
+    public static Encoder Build(SymbolMap symbolMap)
     {
-        _patterns.Add("CLR", new PatternClear());
-        _patterns.Add("RTN", new PatternReturn());
-        _patterns.Add("DRW", new PatternDrawSprite());
-        _patterns.Add("VRG", new PatternValueToRegister());
-        _patterns.Add("CALL", new PatternCall(symbolMap));
-        _patterns.Add("JMP", new PatternJump(symbolMap));
-        _patterns.Add("VI", new PatternValueToI(symbolMap));
-        _patterns.Add("SKE", new PatternSkipIfEqual());
-        _patterns.Add("SKNE", new PatternSkipIfNotEqual());
-        _patterns.Add("SKRE", new PatternSkipIfRegistersEqual());
-        _patterns.Add("ADD", new PatternAddValueToRegister());
-        _patterns.Add("MRV", new PatternMoveRegisterValues());
-        _patterns.Add("OR", new PatternBitwiseOr());
-        _patterns.Add("AND", new PatternBitwiseAnd());
-        _patterns.Add("XOR", new PatternBitwiseXor());
-        _patterns.Add("SUB", new PatternSubtractRegisters());
-        _patterns.Add("SUM", new PatternSumRegisters());
-        _patterns.Add("SHR", new PatternShiftRightRegister());
-        _patterns.Add("SHL", new PatternShiftLeftRegister());
-        _patterns.Add("SKRNE", new PatternSkipIfRegistersNotEqual());
-        _patterns.Add("SUBR", new PatternSubtractRegistersReverse());
-        _patterns.Add("JMPR", new PatternJumpPlusRegister(symbolMap));
-        _patterns.Add("ADDI", new PatternAddRegisterToI());
-        _patterns.Add("RND", new PatternRandom());
-        _patterns.Add("SKEY", new PatternSkipIfKey());
-        _patterns.Add("SNKEY", new PatternSkipIfNotKey());
-        _patterns.Add("DLR", new PatternDelayToRegister());
-        _patterns.Add("WKEY", new PatternWaitForKey());
-        _patterns.Add("DLY", new PatternDelay());
-        _patterns.Add("BUZZ", new PatternBuzzer());
-        _patterns.Add("FRA", new PatternFontAddressToRegister());
-        _patterns.Add("BCD", new PatternBinaryCodedDecimal());
-        _patterns.Add("SRM", new PatternSaveRegistersToMemory());
-        _patterns.Add("LRM", new PatternLoadRegistersFromMemory());
-
-        return this;
+        return new Encoder()
+            .AddPattern("CLR", new PatternClear())
+            .AddPattern("RTN", new PatternReturn())
+            .AddPattern("DRW", new PatternDrawSprite())
+            .AddPattern("VRG", new PatternValueToRegister())
+            .AddPattern("CALL", new PatternCall(symbolMap))
+            .AddPattern("JMP", new PatternJump(symbolMap))
+            .AddPattern("VI", new PatternValueToI(symbolMap))
+            .AddPattern("SKE", new PatternSkipIfEqual())
+            .AddPattern("SKNE", new PatternSkipIfNotEqual())
+            .AddPattern("SKRE", new PatternSkipIfRegistersEqual())
+            .AddPattern("ADD", new PatternAddValueToRegister())
+            .AddPattern("MRV", new PatternMoveRegisterValues())
+            .AddPattern("OR", new PatternBitwiseOr())
+            .AddPattern("AND", new PatternBitwiseAnd())
+            .AddPattern("XOR", new PatternBitwiseXor())
+            .AddPattern("SUB", new PatternSubtractRegisters())
+            .AddPattern("SUM", new PatternSumRegisters())
+            .AddPattern("SHR", new PatternShiftRightRegister())
+            .AddPattern("SHL", new PatternShiftLeftRegister())
+            .AddPattern("SKRNE", new PatternSkipIfRegistersNotEqual())
+            .AddPattern("SUBR", new PatternSubtractRegistersReverse())
+            .AddPattern("JMPR", new PatternJumpPlusRegister(symbolMap))
+            .AddPattern("ADDI", new PatternAddRegisterToI())
+            .AddPattern("RND", new PatternRandom())
+            .AddPattern("SKEY", new PatternSkipIfKey())
+            .AddPattern("SNKEY", new PatternSkipIfNotKey())
+            .AddPattern("DLR", new PatternDelayToRegister())
+            .AddPattern("WKEY", new PatternWaitForKey())
+            .AddPattern("DLY", new PatternDelay())
+            .AddPattern("BUZZ", new PatternBuzzer())
+            .AddPattern("FRA", new PatternFontAddressToRegister())
+            .AddPattern("BCD", new PatternBinaryCodedDecimal())
+            .AddPattern("SRM", new PatternSaveRegistersToMemory())
+            .AddPattern("LRM", new PatternLoadRegistersFromMemory());
     }
     
     public byte[] Encode(ImmutableArray<ParsedLine> lines)
@@ -73,6 +72,13 @@ public class Encoder
         return binary.ToArray();
     }
 
+    private Encoder AddPattern(string mnemonic, InstructionPattern pattern)
+    {
+        _patterns[mnemonic] = pattern;
+
+        return this;
+    }
+
     private byte[] EncodeInstruction(ParsedLine parsedLine)
     {
         if (!_patterns.TryGetValue(parsedLine.Instruction, out var pattern))
@@ -88,7 +94,7 @@ public class Encoder
         return bytes;
     }
 
-    private byte[] EncodeData(ParsedLine parsedLine)
+    private static byte[] EncodeData(ParsedLine parsedLine)
     {
         if (parsedLine.Operands.Length is 0 or > 2)
         {
