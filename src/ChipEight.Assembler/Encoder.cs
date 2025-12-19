@@ -120,7 +120,7 @@ public class Encoder
 
     private IReadOnlyCollection<InstructionPattern> GetPatternGroup(ushort opcode)
     {
-        var group = (byte) ((opcode & 0xF000) >> 16);
+        var group = (byte) ((opcode & 0xF000) >> 12);
         
         return _patternGroups[group];
     }

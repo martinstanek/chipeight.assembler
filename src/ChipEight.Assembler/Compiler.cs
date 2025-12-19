@@ -23,6 +23,11 @@ public static class Compiler
         return Assemble(asm, out _);
     }
 
+    public static string Disassemble(byte[] binary)
+    {
+        return Disassemble(binary, string.Empty);
+    }
+
     public static string Disassemble(byte[] binary, string symbolMap)
     {
         var opcodes = Splitter.FromBinary(binary);
