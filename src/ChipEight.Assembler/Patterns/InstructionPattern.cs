@@ -17,7 +17,7 @@ public abstract class InstructionPattern
         Keyword = keyword;
     }
 
-    public virtual ushort Encode(ParsedLine parsedLine)
+    public ushort Encode(ParsedLine parsedLine)
     {
         ThrowIfNotMnemonic(parsedLine);
 
@@ -25,15 +25,6 @@ public abstract class InstructionPattern
     }
 
     protected abstract ushort EncodeLine(ParsedLine parsedLine);
-
-    protected void ThrowIfNotMnemonic(ParsedLine parsedLine)
-    {
-        if (parsedLine.LineType != LineType.Instruction 
-            || !parsedLine.Instruction.Equals(Mnemonic, StringComparison.OrdinalIgnoreCase))
-        {
-            throw new SyntaxException(parsedLine.LineNumber);
-        }
-    }
 
     protected void ThrowIfNot(byte index, OperandType type, ParsedLine parsedLine)
     {
@@ -74,6 +65,15 @@ public abstract class InstructionPattern
         }
     }
 
+    private void ThrowIfNotMnemonic(ParsedLine parsedLine)
+    {
+        if (parsedLine.LineType != LineType.Instruction 
+            || !parsedLine.Instruction.Equals(Mnemonic, StringComparison.OrdinalIgnoreCase))
+        {
+            throw new SyntaxException(parsedLine.LineNumber);
+        }
+    }
+    
     protected SymbolMap Map { get; }
     
     public string Mnemonic { get; }
