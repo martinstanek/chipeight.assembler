@@ -1,4 +1,6 @@
 using System;
+using System.Text;
+using System.Linq;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using ChipEight.Assembler.Exceptions;
@@ -73,6 +75,23 @@ public class Encoder
         return binary.ToArray();
     }
 
+    public string Decode(ImmutableArray<ushort> opcodes)
+    {
+        var sb = new StringBuilder();
+        
+        foreach (var opcode in opcodes)
+        {
+            var firstMatch = _patterns.Values.Single(s => s.Mnemonic.Equals("ADDI"));
+            var line = firstMatch is not null
+                ? firstMatch.Mnemonic
+                : DecodeData(opcode);
+
+            sb.Append(line);
+        }
+
+        return sb.ToString();
+    }
+
     private Encoder AddPattern(string mnemonic, InstructionPattern pattern)
     {
         _patterns[mnemonic] = pattern;
@@ -112,5 +131,10 @@ public class Encoder
         }
 
         return [(byte)parsedLine.Operands[0].Number, (byte)parsedLine.Operands[1].Number];
+    }
+
+    private static string DecodeData(ushort opcode)
+    {
+        return "";
     }
 }

@@ -22,4 +22,13 @@ public static class Compiler
     {
         return Assemble(asm, out _);
     }
+
+    public static string Disassemble(byte[] binary, string symbolMap)
+    {
+        var opcodes = Splitter.FromBinary(binary);
+        var symbols = SymbolMap.FromMap(symbolMap);
+        var assembly = Encoder.Build(symbols).Decode(opcodes);
+
+        return assembly;
+    }
 }

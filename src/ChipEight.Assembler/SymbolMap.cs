@@ -16,7 +16,12 @@ public class SymbolMap
     {
         _table = table;
     }
-    
+
+    public static SymbolMap FromMap(string map)
+    {
+        return SymbolMap.Empty;
+    }
+
     public static SymbolMap Collect(ImmutableArray<ParsedLine> lines)
     {
         var map = new Dictionary<string, ushort>();
