@@ -1,6 +1,6 @@
 using System;
 
-namespace ChipEight.Assembler;
+namespace ChipEight.Assembler.Patterns;
 
 public sealed class PatternBitwiseXor : InstructionPattern
 {

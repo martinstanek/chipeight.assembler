@@ -1,7 +1,7 @@
 using System;
 using ChipEight.Assembler.Exceptions;
 
-namespace ChipEight.Assembler;
+namespace ChipEight.Assembler.Patterns;
 
 public abstract class InstructionPattern
 {

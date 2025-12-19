@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using ChipEight.Assembler.Exceptions;
+using ChipEight.Assembler.Patterns;
 
 namespace ChipEight.Assembler;
 

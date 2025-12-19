@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using ChipEight.Assembler;
+using ChipEight.Assembler.Patterns;
 using Shouldly;
 using Xunit;
 
