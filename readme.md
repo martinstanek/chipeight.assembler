@@ -1,6 +1,6 @@
 ## The Chip8 Dis/Assembler
 
-*... I'm not good in machine code, so let's try write an assembler .. work in progress*
+*... I'm not good in machine code, so let's try write an assembler*
 
 The complete [mnemonics](https://github.com/martinstanek/chipeight.assembler/blob/develop/misc/assembler.md) and [xmassapp](https://github.com/martinstanek/chipeight.assembler/blob/develop/misc/xmass.asm) example.
 
@@ -10,6 +10,9 @@ The complete [mnemonics](https://github.com/martinstanek/chipeight.assembler/blo
 % ./chipeightasm ./xmass.ch8asm                      
 Compiled: 11.0147ms
 ```
+
+Toolchain (vscode extension)
+![toolchain](https://github.com/martinstanek/chipeight.assembler/blob/develop/misc/vsc.png?raw=true)
 
 Let's draw a space-ship as seen in Byte Magazine '78:
 ```asm 
@@ -30,8 +33,3 @@ Let's draw a space-ship as seen in Byte Magazine '78:
 ```
 
 ![magazine](https://github.com/martinstanek/chipeight.assembler/blob/develop/misc/magazine.png?raw=true)
-
-
-Toolchain (vscode extension)
-![toolchain](https://github.com/martinstanek/chipeight.assembler/blob/develop/misc/vsc.png?raw=true)
-
