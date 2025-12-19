@@ -134,10 +134,8 @@ public class Encoder
 
         var opcode = pattern.Encode(parsedLine);
         var bytes = BitConverter.GetBytes(opcode);
-                
-        bytes.Reverse();
         
-        return bytes;
+        return bytes.Reverse().ToArray();
     }
 
     private static byte[] EncodeData(ParsedLine parsedLine)
