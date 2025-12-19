@@ -1,3 +1,4 @@
+using System;
 using ChipEight.Assembler;
 using ChipEight.Machine;
 using Shouldly;
@@ -656,5 +657,61 @@ public class InstructionsTests
         chip.Run(cycles: 10);
         
         chip.Registers.V[0].ShouldBe((byte) 9);
+    }
+
+    [Fact]
+    public void Chip_Delay()
+    {
+        var asm = """
+                   VRG V1 5
+                   DLY V1 
+                   DLR V2
+                   JMP end
+                   
+                  end:
+                   JMP end
+                  """;
+        
+        var chip = new Chip();
+        var binary = Compiler.Assemble(asm);
+
+        chip.Load(binary);
+        chip.Run(cycles: 3);
+        chip.Registers.Dt.ShouldBe((byte) 5);
+        chip.Registers.V[1].ShouldBe((byte) 5);
+        chip.Registers.V[2].ShouldBe((byte) 5);
+        chip.Run(TimeSpan.FromSeconds(1));
+        chip.Registers.Dt.ShouldBe((byte) 0);
+        chip.Stop();
+    }
+    
+    [Fact]
+    public void Chip_Buzzer()
+    {
+        var asm = """
+                     VRG V2 5
+                     DLY V2
+                     DLR V3 
+                    BUZZ V2
+                     JMP end
+                     
+                   end:
+                     JMP end
+                  """;
+
+        var chip = new Chip();
+        var binary = Compiler.Assemble(asm);
+
+        chip.Load(binary);
+        chip.Buzzer.IsOn.ShouldBeFalse();
+        chip.Run(cycles: 4);
+        chip.Registers.St.ShouldBe((byte) 5);
+        chip.Registers.Dt.ShouldBe((byte) 5);
+        chip.Registers.V[3].ShouldBe((byte) 5);
+        chip.Run(TimeSpan.FromSeconds(1));
+        chip.Registers.St.ShouldBe((byte) 0);
+        chip.Registers.Dt.ShouldBe((byte) 0);
+        chip.Buzzer.IsOn.ShouldBeFalse();
+        chip.Stop();
     }
 }

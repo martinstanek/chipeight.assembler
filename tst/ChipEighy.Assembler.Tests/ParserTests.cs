@@ -24,15 +24,17 @@ public sealed class ParserTests
     }
     
     [Theory]
-    [InlineData(new [] { "0xAA", "0xFF" }, 2)]
-    [InlineData(new [] { "0xAAFF" }, 1)]
-    [InlineData(new [] { "10", "11" }, 2)]
-    [InlineData(new [] { "00001111b", "11110000b" }, 2)]
-    public void ParsedLine_InputIsValidData_ExpectedTypeAndOperandCount(string[] tokens, int operands)
+    [InlineData(new [] { "0xAA", "0xFF" }, 2, 170)]
+    [InlineData(new [] { "0xAAFF" }, 1, 43775)]
+    [InlineData(new [] { "10", "11" }, 2, 10)]
+    [InlineData(new [] { "00001111b", "11110000b" }, 2, 15)]
+    [InlineData(new [] { "00000000b"}, 1, 0)]
+    public void ParsedLine_InputIsValidData_ExpectedTypeAndOperandCount(string[] tokens, int operands, ushort value)
     {
         var line = new ParsedLine(0, tokens.ToImmutableArray());
         
         line.Operands.Length.ShouldBe(operands);
+        line.Operands[0].Number.ShouldBe(value);
         line.LineType.ShouldBe(LineType.Data);
     }
 }

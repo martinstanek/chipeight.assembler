@@ -54,7 +54,7 @@ public sealed class ParsedLine
 
         var operands = new List<Operand>();
         
-        if (tokens.All(IsNumber))
+        if (tokens.All(Operand.IsNumber))
         {
             LineType = LineType.Data;
             operands.Add(new Operand(lineNumber, tokens[0]));
@@ -73,25 +73,7 @@ public sealed class ParsedLine
         Operands = operands.ToImmutableArray();
     }
 
-    private static bool IsNumber(string token)
-    {
-        if (ushort.TryParse(token, NumberStyles.Integer, null, out _))
-        {
-            return true;
-        }
-        
-        if (ushort.TryParse(token.Replace("0x", ""), NumberStyles.HexNumber, null, out _))
-        {
-            return true;
-        }
-        
-        if (ushort.TryParse(token.Replace("b", ""), NumberStyles.BinaryNumber, null, out _))
-        {
-            return true;
-        }
-
-        return false;
-    }
+    
 
     public int LineNumber { get; private set; }
 
@@ -116,6 +98,33 @@ public sealed class Operand
         Parse(lineNumber, token);   
     }
 
+    public static bool IsNumber(string token)
+    {
+        return IsNumber(token, out _);
+    }
+
+    private static bool IsNumber(string token, out ushort number)
+    {
+        number = 0;
+        
+        if (token.EndsWith('b') && ushort.TryParse(token.Replace("b", ""), NumberStyles.BinaryNumber, null, out number))
+        {
+            return true;
+        }
+
+        if (token.StartsWith("0x") && ushort.TryParse(token.Replace("0x", ""), NumberStyles.HexNumber, null, out number))
+        {
+            return true;
+        }
+
+        if (ushort.TryParse(token, NumberStyles.Integer, null, out number))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     private void Parse(int lineNumber, string token)
     {
         if (string.IsNullOrWhiteSpace(token))
@@ -123,27 +132,10 @@ public sealed class Operand
             throw new SyntaxException(lineNumber);
         }
 
-        if (ushort.TryParse(token, NumberStyles.Integer, null, out var deciNumber))
+        if (IsNumber(token, out var num))
         {
             OperandType = OperandType.Number;
-            Number = deciNumber;
-            
-            return;
-        }
-
-        if (ushort.TryParse(token.Replace("0x", ""), NumberStyles.HexNumber, null, out var hexNumber))
-        {
-            OperandType = OperandType.Number;
-            Number = hexNumber;
-
-            return;
-        }
-        
-        if (ushort.TryParse(token.Replace("b", ""), NumberStyles.BinaryNumber, null, out var binNumber))
-        {
-            OperandType = OperandType.Number;
-            Number = binNumber;
-
+            Number = num;
             return;
         }
 
@@ -166,7 +158,7 @@ public sealed class Operand
     }
 
     public OperandType OperandType { get; private set; }
-
+    
     public byte Register { get; private set; }
 
     public ushort Number { get; private set; }
