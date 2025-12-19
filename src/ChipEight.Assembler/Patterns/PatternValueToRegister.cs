@@ -5,7 +5,12 @@ namespace ChipEight.Assembler.Patterns;
 public sealed class PatternValueToRegister : InstructionPattern
 {
     public PatternValueToRegister() : base("VRG", "ValueToRegister") {  }
-    
+
+    public override bool CanDecode(ushort opcode, out string line)
+    {
+        throw new NotImplementedException();
+    }
+
     protected override ushort EncodeLine(ParsedLine parsedLine)
     {
         ThrowIfNot(index: 0, OperandType.Register, parsedLine);

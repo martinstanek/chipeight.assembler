@@ -6,6 +6,11 @@ public sealed class PatternRandom : InstructionPattern
 {
     public PatternRandom() : base("RND", "Random") { }
 
+    public override bool CanDecode(ushort opcode, out string line)
+    {
+        throw new NotImplementedException();
+    }
+
     protected override ushort EncodeLine(ParsedLine parsedLine)
     {
         ThrowIfNot(index: 0, OperandType.Register, parsedLine);

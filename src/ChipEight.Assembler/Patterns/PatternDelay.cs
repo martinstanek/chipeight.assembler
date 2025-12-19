@@ -6,6 +6,11 @@ public sealed class PatternDelay : InstructionPattern
 {
     public PatternDelay() : base("DLY", "Delay") { }
 
+    public override bool CanDecode(ushort opcode, out string line)
+    {
+        throw new NotImplementedException();
+    }
+
     protected override ushort EncodeLine(ParsedLine parsedLine)
     {
         ThrowIfNot(index: 0, OperandType.Register, parsedLine);

@@ -3,7 +3,12 @@ namespace ChipEight.Assembler.Patterns;
 public sealed class PatternJump : InstructionPattern
 {
     public PatternJump(SymbolMap symbolMap) : base("JMP", "Jump", symbolMap) { }
-    
+
+    public override bool CanDecode(ushort opcode, out string line)
+    {
+        throw new System.NotImplementedException();
+    }
+
     protected override ushort EncodeLine(ParsedLine parsedLine)
     {
         ThrowIf(index: 0, OperandType.Register, parsedLine);

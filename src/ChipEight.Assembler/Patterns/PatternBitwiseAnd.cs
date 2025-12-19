@@ -6,6 +6,11 @@ public sealed class PatternBitwiseAnd : InstructionPattern
 {
     public PatternBitwiseAnd() : base("AND", "BitwiseAnd") { }
 
+    public override bool CanDecode(ushort opcode, out string line)
+    {
+        throw new NotImplementedException();
+    }
+
     protected override ushort EncodeLine(ParsedLine parsedLine)
     {
         ThrowIfNot(index: 0, OperandType.Register, parsedLine);

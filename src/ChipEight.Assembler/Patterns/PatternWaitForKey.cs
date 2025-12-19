@@ -6,6 +6,11 @@ public sealed class PatternWaitForKey : InstructionPattern
 {
     public PatternWaitForKey() : base("WKEY", "WaitForKey") { }
 
+    public override bool CanDecode(ushort opcode, out string line)
+    {
+        throw new NotImplementedException();
+    }
+
     protected override ushort EncodeLine(ParsedLine parsedLine)
     {
         ThrowIfNot(index: 0, OperandType.Register, parsedLine);
