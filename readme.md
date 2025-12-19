@@ -2,7 +2,7 @@
 
 *... I'm not good in machine code, so let's try write an assembler .. work in progress*
 
-The complete [mnemonics](https://github.com/martinstanek/chipeight.assembler/blob/develop/misc/assembler.md)
+The complete [mnemonics](https://github.com/martinstanek/chipeight.assembler/blob/develop/misc/assembler.md) and [xmassapp](https://github.com/martinstanek/chipeight.assembler/blob/develop/misc/xmass.asm) example.
 
 ### Usage
 
