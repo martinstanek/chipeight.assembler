@@ -159,6 +159,6 @@ public class Encoder
 
     private static string DecodeData(ushort opcode)
     {
-        return "";
+        return $"0x{opcode:X4}";
     }
 }

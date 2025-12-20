@@ -11,7 +11,7 @@ The complete [mnemonics](https://github.com/martinstanek/chipeight.assembler/blo
 Compiled: 11.0147ms
 ```
 
-Toolchain (vscode extension)
+The toolchain (vscode extension)
 ![toolchain](https://github.com/martinstanek/chipeight.assembler/blob/develop/misc/vsc.png?raw=true)
 
 Let's draw a space-ship as seen in Byte Magazine '78:
@@ -33,3 +33,30 @@ Let's draw a space-ship as seen in Byte Magazine '78:
 ```
 
 ![magazine](https://github.com/martinstanek/chipeight.assembler/blob/develop/misc/magazine.png?raw=true)
+
+### Disassembly
+
+Without a symbolic map, any disassembly is just a best guess, but hey ... it does something.
+The first lines of the famous IBM Logo ROM:
+
+```asm
+CLR
+VRG V1 1
+VRG V0 8
+VI 592
+DRW V0 V1 15
+VRG V0 16
+VI 607
+DRW V0 V1 15
+VRG V0 24
+VI 622
+DRW V0 V1 15
+VRG V0 32
+VI 637
+DRW V0 V1 15
+VRG V0 40
+VI 652
+DRW V0 V1 15
+VRG V0 48
+VI 667
+```
