@@ -9,6 +9,9 @@ The complete [mnemonics](https://github.com/martinstanek/chipeight.assembler/blo
 ```shell
 % ./chipeightasm ./xmass.ch8asm                      
 Compiled: 11.0147ms
+
+% ./chipeightasm ../rom/1-chip8-logo.ch8
+Decompiled: 1.0773ms
 ```
 
 The toolchain (vscode extension)
