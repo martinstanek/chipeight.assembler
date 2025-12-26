@@ -20,9 +20,9 @@ public class InstructionsTests
 
         chip.Load(binary);
         chip.Run(cycles: 1);
-        chip.Registers.Pc.ShouldBe((ushort) 0x202);
+        chip.Registers.Pc.ShouldBe((ushort)0x202);
     }
-    
+
     [Fact]
     public void Chip_ValueToRegister()
     {
@@ -35,25 +35,25 @@ public class InstructionsTests
 
         chip.Load(binary);
         chip.Run(cycles: 1);
-        chip.Registers.V[2].ShouldBe((byte) 10);
+        chip.Registers.V[2].ShouldBe((byte)10);
     }
-    
+
     [Fact]
     public void Chip_Jump()
     {
         var asm = """
                   JMP 0x206  
                   """;
-        
+
         var chip = new Chip();
         var binary = Compiler.Assemble(asm);
-        
+
         chip.Load(binary);
         chip.Run(cycles: 1);
-        
-        chip.Registers.Pc.ShouldBe((ushort) 0x206);
+
+        chip.Registers.Pc.ShouldBe((ushort)0x206);
     }
-    
+
     [Fact]
     public void Chip_RandomToRegister()
     {
@@ -67,10 +67,10 @@ public class InstructionsTests
 
         chip.Load(binary);
         chip.Run(cycles: 2);
-        
-        chip.Registers.V[0x0].ShouldNotBe((byte) 0x81);
+
+        chip.Registers.V[0x0].ShouldNotBe((byte)0x81);
     }
-    
+
     [Fact]
     public void Chip_Call()
     {
@@ -80,16 +80,16 @@ public class InstructionsTests
                    VRG V0 10
                    RTN
                   """;
-        
+
         var chip = new Chip();
         var binary = Compiler.Assemble(asm);
 
         chip.Load(binary);
         chip.Run(cycles: 4);
-        
-        chip.Registers.Pc.ShouldBe((ushort) 0x206);
+
+        chip.Registers.Pc.ShouldBe((ushort)0x206);
     }
-    
+
     [Fact]
     public void Chip_SkipIfKey()
     {
@@ -97,17 +97,17 @@ public class InstructionsTests
                    VRG V1 2
                   SKEY V1
                   """;
-        
+
         var chip = new Chip();
         var binary = Compiler.Assemble(asm);
-        
+
         chip.Keypad.Keys[0x2] = true;
         chip.Load(binary);
         chip.Run(cycles: 2);
-        
-        chip.Registers.Pc.ShouldBe((ushort) 0x206);
+
+        chip.Registers.Pc.ShouldBe((ushort)0x206);
     }
-    
+
     [Fact]
     public void Chip_SkipIfNotKey()
     {
@@ -115,17 +115,17 @@ public class InstructionsTests
                     VRG V1 2
                   SNKEY V1
                   """;
-        
+
         var chip = new Chip();
         var binary = Compiler.Assemble(asm);
-        
+
         chip.Keypad.Keys[0x2] = false;
         chip.Load(binary);
         chip.Run(cycles: 2);
-        
-        chip.Registers.Pc.ShouldBe((ushort) 0x206);
+
+        chip.Registers.Pc.ShouldBe((ushort)0x206);
     }
-    
+
     [Fact]
     public void Chip_CallAndReturn()
     {
@@ -136,16 +136,16 @@ public class InstructionsTests
                    VRG V2 10
                    RTN
                   """;
-        
+
         var chip = new Chip();
         var binary = Compiler.Assemble(asm);
 
         chip.Load(binary);
         chip.Run(cycles: 6);
-        
-        chip.Registers.Pc.ShouldBe((ushort) 0x208);
-        chip.Registers.Sp.ShouldBe((byte) 0);
-        chip.Opcode.ShouldNotBeNull().ShouldBe((ushort) 0x620A );
+
+        chip.Registers.Pc.ShouldBe((ushort)0x208);
+        chip.Registers.Sp.ShouldBe((byte)0);
+        chip.Opcode.ShouldNotBeNull().ShouldBe((ushort)0x620A);
     }
 
     [Fact]
@@ -160,13 +160,13 @@ public class InstructionsTests
 
         var chip = new Chip();
         var binary = Compiler.Assemble(asm);
-        
+
         chip.Load(binary);
         chip.Run(cycles: 3);
-        
-        chip.Registers.V[0x1].ShouldBe((byte) 0x02);
+
+        chip.Registers.V[0x1].ShouldBe((byte)0x02);
     }
-    
+
     [Fact]
     public void Chip_SkipIfNotEqual()
     {
@@ -176,14 +176,14 @@ public class InstructionsTests
                    VRG V1 1
                    VRG V1 2
                   """;
-        
+
         var chip = new Chip();
         var binary = Compiler.Assemble(asm);
-        
+
         chip.Load(binary);
         chip.Run(cycles: 3);
-        
-        chip.Registers.V[1].ShouldBe((byte) 0x02);
+
+        chip.Registers.V[1].ShouldBe((byte)0x02);
     }
 
     [Fact]
@@ -199,13 +199,13 @@ public class InstructionsTests
 
         var chip = new Chip();
         var binary = Compiler.Assemble(asm);
-        
+
         chip.Load(binary);
         chip.Run(cycles: 4);
-        
-        chip.Registers.V[0].ShouldBe((byte) 0x02);
+
+        chip.Registers.V[0].ShouldBe((byte)0x02);
     }
-    
+
     [Fact]
     public void Chip_SkipIfRegistersNotEqual()
     {
@@ -218,11 +218,11 @@ public class InstructionsTests
                   """;
         var chip = new Chip();
         var binary = Compiler.Assemble(asm);
-        
+
         chip.Load(binary);
         chip.Run(cycles: 4);
-        
-        chip.Registers.V[0].ShouldBe((byte) 0x02);
+
+        chip.Registers.V[0].ShouldBe((byte)0x02);
     }
 
     [Fact]
@@ -233,16 +233,16 @@ public class InstructionsTests
                   VRG V1 3
                   MRV V0 V1
                   """;
-        
+
         var chip = new Chip();
         var binary = Compiler.Assemble(asm);
-        
+
         chip.Load(binary);
         chip.Run(cycles: 3);
-        
-        chip.Registers.V[0].ShouldBe((byte) 0x03);
+
+        chip.Registers.V[0].ShouldBe((byte)0x03);
     }
-    
+
     [Fact]
     public void Chip_RegistersOr()
     {
@@ -251,16 +251,16 @@ public class InstructionsTests
                   VRG V1 0xFF
                    OR V0 V1
                   """;
-        
+
         var chip = new Chip();
         var binary = Compiler.Assemble(asm);
-        
+
         chip.Load(binary);
         chip.Run(cycles: 3);
-        
-        chip.Registers.V[0].ShouldBe((byte) 0xFF);
+
+        chip.Registers.V[0].ShouldBe((byte)0xFF);
     }
-    
+
     [Fact]
     public void Chip_RegistersAnd()
     {
@@ -269,16 +269,16 @@ public class InstructionsTests
                   VRG V1 0xF0
                   AND V0 V1
                   """;
-        
+
         var chip = new Chip();
         var binary = Compiler.Assemble(asm);
-        
+
         chip.Load(binary);
         chip.Run(cycles: 3);
-        
-        chip.Registers.V[0].ShouldBe((byte) 0xF0);
+
+        chip.Registers.V[0].ShouldBe((byte)0xF0);
     }
-    
+
     [Fact]
     public void Chip_RegistersXor()
     {
@@ -287,16 +287,16 @@ public class InstructionsTests
                   VRG V1 0xF0
                   XOR V0 V1
                   """;
-        
+
         var chip = new Chip();
         var binary = Compiler.Assemble(asm);
-        
+
         chip.Load(binary);
         chip.Run(cycles: 3);
-        
-        chip.Registers.V[0].ShouldBe((byte) 0x00);
+
+        chip.Registers.V[0].ShouldBe((byte)0x00);
     }
-    
+
     [Fact]
     public void Chip_RegistersAdd_NotOverFlow()
     {
@@ -305,17 +305,17 @@ public class InstructionsTests
                   VRG V1 1
                   SUM V0 V1
                   """;
-        
+
         var chip = new Chip();
         var binary = Compiler.Assemble(asm);
-        
+
         chip.Load(binary);
         chip.Run(cycles: 3);
-        
-        chip.Registers.V[0].ShouldBe((byte) 0x02);
-        chip.Registers.V[0xF].ShouldBe((byte) 0x0);
+
+        chip.Registers.V[0].ShouldBe((byte)0x02);
+        chip.Registers.V[0xF].ShouldBe((byte)0x0);
     }
-    
+
     [Fact]
     public void Chip_RegistersAdd_WithOverFlow()
     {
@@ -324,17 +324,17 @@ public class InstructionsTests
                   VRG V1 0x02
                   SUM V0 V1
                   """;
-        
+
         var chip = new Chip();
         var binary = Compiler.Assemble(asm);
-        
+
         chip.Load(binary);
         chip.Run(cycles: 3);
-        
-        chip.Registers.V[0].ShouldBe((byte) 0x01);
-        chip.Registers.V[0xF].ShouldBe((byte) 0x1);
+
+        chip.Registers.V[0].ShouldBe((byte)0x01);
+        chip.Registers.V[0xF].ShouldBe((byte)0x1);
     }
-    
+
     [Fact]
     public void Chip_RegistersSubtract_NotBorrow()
     {
@@ -343,17 +343,17 @@ public class InstructionsTests
                   VRG V1 1
                   SUB V0 V1
                   """;
-        
+
         var chip = new Chip();
         var binary = Compiler.Assemble(asm);
-        
+
         chip.Load(binary);
         chip.Run(cycles: 3);
-        
-        chip.Registers.V[0].ShouldBe((byte) 0x1);
-        chip.Registers.V[0xF].ShouldBe((byte) 0x1);
+
+        chip.Registers.V[0].ShouldBe((byte)0x1);
+        chip.Registers.V[0xF].ShouldBe((byte)0x1);
     }
-    
+
     [Fact]
     public void Chip_RegistersSubtract_WithBorrow()
     {
@@ -362,17 +362,17 @@ public class InstructionsTests
                   VRG V1 1
                   SUB V0 V1
                   """;
-        
+
         var chip = new Chip();
         var binary = Compiler.Assemble(asm);
-       
+
         chip.Load(binary);
         chip.Run(cycles: 3);
-        
-        chip.Registers.V[0].ShouldBe((byte) 0x1);
-        chip.Registers.V[0xF].ShouldBe((byte) 0x1);
+
+        chip.Registers.V[0].ShouldBe((byte)0x1);
+        chip.Registers.V[0xF].ShouldBe((byte)0x1);
     }
-   
+
     [Fact]
     public void Chip_RegistersSubtractReverse_NotBorrow()
     {
@@ -381,17 +381,17 @@ public class InstructionsTests
                   VRG V1 2
                   SUB V0 V1
                   """;
-        
+
         var chip = new Chip();
         var binary = Compiler.Assemble(asm);
-        
+
         chip.Load(binary);
         chip.Run(cycles: 3);
-        
-        chip.Registers.V[0].ShouldBe((byte) 0xFF);
-        chip.Registers.V[0xF].ShouldBe((byte) 0x0);
+
+        chip.Registers.V[0].ShouldBe((byte)0xFF);
+        chip.Registers.V[0xF].ShouldBe((byte)0x0);
     }
-    
+
     [Fact]
     public void Chip_RegistersSubtractReverse_WithBorrow()
     {
@@ -400,15 +400,15 @@ public class InstructionsTests
                   VRG V1 1
                   SUBR V0 V1
                   """;
-        
+
         var chip = new Chip();
         var binary = Compiler.Assemble(asm);
 
         chip.Load(binary);
         chip.Run(cycles: 3);
-        
-        chip.Registers.V[0].ShouldBe((byte) 0xFF);
-        chip.Registers.V[0xF].ShouldBe((byte) 0x0);
+
+        chip.Registers.V[0].ShouldBe((byte)0xFF);
+        chip.Registers.V[0xF].ShouldBe((byte)0x0);
     }
 
     [Fact]
@@ -418,17 +418,17 @@ public class InstructionsTests
                   VRG V0 2
                   SHR V0
                   """;
-        
+
         var chip = new Chip();
         var binary = Compiler.Assemble(asm);
-        
+
         chip.Load(binary);
         chip.Run(cycles: 2);
-        
-        chip.Registers.V[0].ShouldBe((byte) 0x01);
-        chip.Registers.V[0xF].ShouldBe((byte) 0x0);
+
+        chip.Registers.V[0].ShouldBe((byte)0x01);
+        chip.Registers.V[0xF].ShouldBe((byte)0x0);
     }
-    
+
     [Fact]
     public void Chip_RegistersShiftLeft()
     {
@@ -436,17 +436,17 @@ public class InstructionsTests
                   VRG V0 1
                   SHL V0
                   """;
-        
+
         var chip = new Chip();
         var binary = Compiler.Assemble(asm);
-        
+
         chip.Load(binary);
         chip.Run(cycles: 2);
-        
-        chip.Registers.V[0].ShouldBe((byte) 0x02);
-        chip.Registers.V[0xF].ShouldBe((byte) 0x0);
+
+        chip.Registers.V[0].ShouldBe((byte)0x02);
+        chip.Registers.V[0xF].ShouldBe((byte)0x0);
     }
-    
+
     [Fact]
     public void Chip_AddRegisterToI()
     {
@@ -455,17 +455,17 @@ public class InstructionsTests
                     VI 1
                   ADDI V0 
                   """;
-        
+
         var chip = new Chip();
         var binary = Compiler.Assemble(asm);
-        
+
         chip.Load(binary);
         chip.Run(cycles: 3);
-        
-        chip.Registers.V[0].ShouldBe((byte) 0x01);
-        chip.Registers.I.ShouldBe((byte) 0x02);
+
+        chip.Registers.V[0].ShouldBe((byte)0x01);
+        chip.Registers.I.ShouldBe((byte)0x02);
     }
-    
+
     [Fact]
     public void Chip_BCD()
     {
@@ -474,20 +474,20 @@ public class InstructionsTests
                    VI 0x250
                   BCD V0
                   """;
-        
+
         var chip = new Chip();
         var binary = Compiler.Assemble(asm);
-        
+
         chip.Load(binary);
         chip.Run(cycles: 3);
-        
-        chip.Registers.V[0].ShouldBe((byte) 0xFE);
-        chip.Registers.I.ShouldBe((ushort) 0x250);
-        chip.Memory.Raw[chip.Registers.I].ShouldBe((byte) 2);
-        chip.Memory.Raw[chip.Registers.I + 1].ShouldBe((byte) 5);
-        chip.Memory.Raw[chip.Registers.I + 2].ShouldBe((byte) 4);
+
+        chip.Registers.V[0].ShouldBe((byte)0xFE);
+        chip.Registers.I.ShouldBe((ushort)0x250);
+        chip.Memory.Raw[chip.Registers.I].ShouldBe((byte)2);
+        chip.Memory.Raw[chip.Registers.I + 1].ShouldBe((byte)5);
+        chip.Memory.Raw[chip.Registers.I + 2].ShouldBe((byte)4);
     }
-    
+
     [Fact]
     public void Chip_StoreRegistersToMemory()
     {
@@ -498,22 +498,22 @@ public class InstructionsTests
                    VI 0x250
                   SRM V3
                   """;
-        
+
         var chip = new Chip();
         var binary = Compiler.Assemble(asm);
-        
+
         chip.Load(binary);
         chip.Run(cycles: 5);
-        
-        chip.Registers.V[0].ShouldBe((byte) 0xFE);
-        chip.Registers.V[1].ShouldBe((byte) 0xEF);
-        chip.Registers.V[2].ShouldBe((byte) 0xFF);
-        chip.Registers.I.ShouldBe((ushort) 0x250);
-        chip.Memory.Raw[chip.Registers.I].ShouldBe((byte) 0xFE);
-        chip.Memory.Raw[chip.Registers.I + 1].ShouldBe((byte) 0xEF);
-        chip.Memory.Raw[chip.Registers.I + 2].ShouldBe((byte) 0xFF);
+
+        chip.Registers.V[0].ShouldBe((byte)0xFE);
+        chip.Registers.V[1].ShouldBe((byte)0xEF);
+        chip.Registers.V[2].ShouldBe((byte)0xFF);
+        chip.Registers.I.ShouldBe((ushort)0x250);
+        chip.Memory.Raw[chip.Registers.I].ShouldBe((byte)0xFE);
+        chip.Memory.Raw[chip.Registers.I + 1].ShouldBe((byte)0xEF);
+        chip.Memory.Raw[chip.Registers.I + 2].ShouldBe((byte)0xFF);
     }
-    
+
     [Fact]
     public void Chip_LoadRegistersFromMemory()
     {
@@ -528,22 +528,22 @@ public class InstructionsTests
                   VRG V2 0
                   LRM V3
                   """;
-        
+
         var chip = new Chip();
         var binary = Compiler.Assemble(asm);
-        
+
         chip.Load(binary);
         chip.Run(cycles: 9);
-        
-        chip.Registers.V[0].ShouldBe((byte) 0xFE);
-        chip.Registers.V[1].ShouldBe((byte) 0xEF);
-        chip.Registers.V[2].ShouldBe((byte) 0xFF);
-        chip.Registers.I.ShouldBe((ushort) 0x250);
-        chip.Memory.Raw[chip.Registers.I].ShouldBe((byte) 0xFE);
-        chip.Memory.Raw[chip.Registers.I + 1].ShouldBe((byte) 0xEF);
-        chip.Memory.Raw[chip.Registers.I + 2].ShouldBe((byte) 0xFF);
+
+        chip.Registers.V[0].ShouldBe((byte)0xFE);
+        chip.Registers.V[1].ShouldBe((byte)0xEF);
+        chip.Registers.V[2].ShouldBe((byte)0xFF);
+        chip.Registers.I.ShouldBe((ushort)0x250);
+        chip.Memory.Raw[chip.Registers.I].ShouldBe((byte)0xFE);
+        chip.Memory.Raw[chip.Registers.I + 1].ShouldBe((byte)0xEF);
+        chip.Memory.Raw[chip.Registers.I + 2].ShouldBe((byte)0xFF);
     }
-    
+
     [Fact]
     public void Chip_DrawSprite()
     {
@@ -557,20 +557,20 @@ public class InstructionsTests
                         01110000b 11111000b
                         11011000b 10001000b
                   """;
-        
+
         var chip = new Chip().WithRemoteDisplay("http://127.0.0.1:8090");
         var binary = Compiler.Assemble(asm);
-        
+
         chip.Load(binary);
         chip.Run(cycles: 6);
-        chip.Memory.Raw[0x20A].ShouldBe((byte) 0x20);
-        chip.Memory.Raw[0x20A + 1].ShouldBe((byte) 0x70);
-        chip.Memory.Raw[0x20A + 2].ShouldBe((byte) 0x70);
-        chip.Memory.Raw[0x20A + 3].ShouldBe((byte) 0xF8);
-        chip.Memory.Raw[0x20A + 4].ShouldBe((byte) 0xD8);
-        chip.Memory.Raw[0x20A + 5].ShouldBe((byte) 0x88);
+        chip.Memory.Raw[0x20A].ShouldBe((byte)0x20);
+        chip.Memory.Raw[0x20A + 1].ShouldBe((byte)0x70);
+        chip.Memory.Raw[0x20A + 2].ShouldBe((byte)0x70);
+        chip.Memory.Raw[0x20A + 3].ShouldBe((byte)0xF8);
+        chip.Memory.Raw[0x20A + 4].ShouldBe((byte)0xD8);
+        chip.Memory.Raw[0x20A + 5].ShouldBe((byte)0x88);
     }
-    
+
     [Fact]
     public void Chip_DrawSprite_WithLabels()
     {
@@ -593,15 +593,15 @@ public class InstructionsTests
 
         var chip = new Chip();
         var binary = Compiler.Assemble(asm);
-        
+
         chip.Load(binary);
         chip.Run(cycles: 6);
-        chip.Memory.Raw[0x20A].ShouldBe((byte) 0x20);
-        chip.Memory.Raw[0x20A + 1].ShouldBe((byte) 0x70);
-        chip.Memory.Raw[0x20A + 2].ShouldBe((byte) 0x70);
-        chip.Memory.Raw[0x20A + 3].ShouldBe((byte) 0xF8);
-        chip.Memory.Raw[0x20A + 4].ShouldBe((byte) 0xD8);
-        chip.Memory.Raw[0x20A + 5].ShouldBe((byte) 0x88);
+        chip.Memory.Raw[0x20A].ShouldBe((byte)0x20);
+        chip.Memory.Raw[0x20A + 1].ShouldBe((byte)0x70);
+        chip.Memory.Raw[0x20A + 2].ShouldBe((byte)0x70);
+        chip.Memory.Raw[0x20A + 3].ShouldBe((byte)0xF8);
+        chip.Memory.Raw[0x20A + 4].ShouldBe((byte)0xD8);
+        chip.Memory.Raw[0x20A + 5].ShouldBe((byte)0x88);
     }
 
     [Fact]
@@ -627,8 +627,8 @@ public class InstructionsTests
 
         chip.Load(binary);
         chip.Run(cycles: 6);
-        
-        chip.Registers.V[0].ShouldBe((byte) 3);
+
+        chip.Registers.V[0].ShouldBe((byte)3);
     }
 
     [Fact]
@@ -638,15 +638,15 @@ public class InstructionsTests
                   main:
                      CALL subroutine1
                       JMP end
-                  
+
                   subroutine1:
                      CALL subroutine2
                       RTN
-                  
+
                   subroutine2:
                       VRG V0 9
                       RTN
-                  
+
                   end:
                       JMP end
                   """;
@@ -655,8 +655,8 @@ public class InstructionsTests
 
         chip.Load(binary);
         chip.Run(cycles: 10);
-        
-        chip.Registers.V[0].ShouldBe((byte) 9);
+
+        chip.Registers.V[0].ShouldBe((byte)9);
     }
 
     [Fact]
@@ -671,20 +671,20 @@ public class InstructionsTests
                   end:
                    JMP end
                   """;
-        
+
         var chip = new Chip();
         var binary = Compiler.Assemble(asm);
 
         chip.Load(binary);
         chip.Run(cycles: 3);
-        chip.Registers.Dt.ShouldBe((byte) 5);
-        chip.Registers.V[1].ShouldBe((byte) 5);
-        chip.Registers.V[2].ShouldBe((byte) 5);
+        chip.Registers.Dt.ShouldBe((byte)5);
+        chip.Registers.V[1].ShouldBe((byte)5);
+        chip.Registers.V[2].ShouldBe((byte)5);
         chip.Run(TimeSpan.FromSeconds(1));
-        chip.Registers.Dt.ShouldBe((byte) 0);
+        chip.Registers.Dt.ShouldBe((byte)0);
         chip.Stop();
     }
-    
+
     [Fact]
     public void Chip_Buzzer()
     {
@@ -705,13 +705,37 @@ public class InstructionsTests
         chip.Load(binary);
         chip.Buzzer.IsOn.ShouldBeFalse();
         chip.Run(cycles: 4);
-        chip.Registers.St.ShouldBe((byte) 5);
-        chip.Registers.Dt.ShouldBe((byte) 5);
-        chip.Registers.V[3].ShouldBe((byte) 5);
+        chip.Registers.St.ShouldBe((byte)5);
+        chip.Registers.Dt.ShouldBe((byte)5);
+        chip.Registers.V[3].ShouldBe((byte)5);
         chip.Run(TimeSpan.FromSeconds(1));
-        chip.Registers.St.ShouldBe((byte) 0);
-        chip.Registers.Dt.ShouldBe((byte) 0);
+        chip.Registers.St.ShouldBe((byte)0);
+        chip.Registers.Dt.ShouldBe((byte)0);
         chip.Buzzer.IsOn.ShouldBeFalse();
         chip.Stop();
     }
+
+    [Fact]
+    public void Chip_JustData()
+    {
+        var asm = """
+                  justdata:
+                  JMP justdata
+                  
+                  # 0x0C00
+                  d1:
+                  	2575
+                  	64001
+                  # 0x0C04
+                  d2:
+                  	61455
+                  """;
+        
+        var chip = new Chip();
+        var binary = Compiler.Assemble(asm);
+        
+        chip.Load(binary);
+        chip.Run(TimeSpan.FromSeconds(1));
+    }
+
 }
