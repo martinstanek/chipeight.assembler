@@ -737,5 +737,32 @@ public class InstructionsTests
         chip.Load(binary);
         chip.Run(TimeSpan.FromSeconds(1));
     }
+    
+    [Fact]
+    public void Chip_ReadData()
+    {
+        var asm = """
+                  readdata:
+                   VI xcoord
+                  LRM V0
+                  MRV V1 V0
+                   VI ycoord
+                  LRM V0 
+                  JMP readdata
+                  
+                  xcoord:
+                  	5
+                  ycoord:
+                  	5
+                  """;
+        
+        var chip = new Chip();
+        var binary = Compiler.Assemble(asm);
+        
+        chip.Load(binary);
+        chip.Run(TimeSpan.FromSeconds(1));
+        chip.Registers.V[0].ShouldBe((byte) 5);
+        chip.Registers.V[1].ShouldBe((byte) 5);
+    }
 
 }
